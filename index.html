@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STK-48 MASTER CORE</title>
+    <title>STK-48 ULTRA</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap');
 
         :root {
             --accent: #5865F2;
@@ -15,264 +15,146 @@
             --panel: #16171a;
             --border: #2d2f35;
             --text: #ffffff;
-            --error: #ff4747;
             --success: #23a559;
         }
-
-        * { box-sizing: border-box; transition: all 0.2s ease; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+            box-sizing: border-box;
         }
 
-        .terminal-container {
-            width: 100%;
-            max-width: 440px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+        .main-card {
+            width: 100%; max-width: 420px;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 16px; padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
             position: relative;
             box-sizing: border-box;
         }
 
-        .system-tag {
-            position: absolute;
-            top: -12px;
-            left: 25px;
-            background: var(--accent);
-            color: white;
+        .status-tag {
+            position: absolute; top: -10px; left: 20px;
+            background: var(--accent); color: white;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            padding: 2px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            letter-spacing: 1px;
+            font-size: 9px; padding: 2px 8px; border-radius: 4px;
         }
 
-        h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -1px; }
-        .subtitle { color: #8e9297; font-size: 13px; margin-bottom: 30px; }
+        h1 { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .desc { color: #8e9297; font-size: 12px; margin-bottom: 25px; }
 
-        .drop-box {
-            border: 2px dashed var(--border);
-            border-radius: 14px;
-            padding: 45px 20px;
-            text-align: center;
-            background: rgba(0,0,0,0.3);
-            cursor: pointer;
-            margin-bottom: 20px;
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: 12px;
+            padding: 40px 20px; text-align: center;
+            background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px;
         }
 
-        .drop-box:hover { border-color: var(--accent); background: rgba(88,101,242,0.08); transform: scale(1.01); }
+        .upload-area:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
 
         .input-text {
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--border);
-            padding: 14px;
-            border-radius: 10px;
-            color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            margin-bottom: 15px;
-            outline: none;
+            width: 100%; background: #000; border: 1px solid var(--border);
+            padding: 12px; border-radius: 8px; color: var(--accent);
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 10px;
             box-sizing: border-box;
         }
 
         .btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 1px;
+            width: 100%; padding: 14px; border-radius: 8px; border: none;
+            font-weight: 900; cursor: pointer; text-transform: uppercase;
+            font-size: 12px; margin-bottom: 8px;
             box-sizing: border-box;
         }
 
-        .btn-run { background: var(--accent); color: #fff; }
+        .btn-primary { background: var(--accent); color: #fff; }
 
         #monitor {
-            display: none;
-            margin-top: 20px;
-            padding: 18px;
-            background: #000;
-            border-radius: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
+            display: none; margin-top: 15px; padding: 12px;
+            background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
         }
 
-        .progress-track {
-            height: 5px;
-            background: #1a1a1a;
-            margin-top: 12px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        .bar-bg { height: 4px; background: #1a1a1a; margin-top: 8px; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
 
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.4s ease; }
-
-        #output-card {
-            display: none;
-            margin-top: 30px;
-            text-align: center;
-        }
-
+        #result-view { display: none; margin-top: 25px; text-align: center; }
         .preview-circle {
-            width: 70px; height: 70px;
-            background: #000;
-            border: 1px solid var(--border);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
+            width: 60px; height: 60px; background: #000; border: 1px solid var(--border);
+            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
         }
-
         .preview-circle img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
 
-        #error-msg {
-            display: none;
-            color: var(--error);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            margin-top: 15px;
-            text-align: left;
-            border: 1px solid var(--error);
-            padding: 10px;
-            border-radius: 6px;
-            word-break: break-all;
-        }
+        .btn-success { background: var(--success); color: white; }
     </style>
 </head>
 <body>
 
-<div class="terminal-container">
-    <div class="system-tag">STK-48 ENGINE v4.1</div>
-    <h1>STK-48 MASTER</h1>
-    <div class="subtitle">Procesamiento industrial de stickers 48x48.</div>
+<div class="main-card">
+    <div class="status-tag">STK-48 ULTRA v5.0</div>
+    <h1>STK-48 ULTRA</h1>
+    <div class="desc">Procesamiento permanente 48x48 para Discord.</div>
 
-    <div class="drop-box" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 30px;">📦</div>
-        <div style="font-weight: 700; margin-top: 10px;">SUBIR SOURCE</div>
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size: 24px;">🚀</div>
+        <div style="font-weight: bold; margin-top: 8px; font-size: 13px;">CARGAR IMAGEN / GIF</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" class="input-text" placeholder="PEGAR URL DIRECTA...">
-    <button class="btn btn-run" onclick="fromUrl()">INICIAR CONVERSIÓN</button>
+    <input type="text" id="urlInput" class="input-text" placeholder="PEGAR ENLACE...">
+    <button class="btn btn-primary" onclick="fromUrl()">INICIAR</button>
 
     <div id="monitor">
-        <div id="status-label">STATUS: STANDBY</div>
-        <div class="progress-track"><div class="progress-fill" id="bar"></div></div>
-        <div id="error-msg"></div>
+        <div id="status-label">ESPERANDO...</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
     </div>
 
-    <div id="output-card">
-        <div class="preview-circle"><img id="final-img" src="" alt=""></div>
+    <div id="result-view">
+        <div class="preview-circle"><img id="preview-img" src="" alt=""></div>
         <input type="text" id="final-url" class="input-text" readonly style="text-align: center;">
-        <button class="btn" style="background:var(--success); color:white;" onclick="copyResult()">COPIAR ENLACE</button>
-        <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">REINICIAR</button>
+        <button class="btn btn-success" onclick="copyUrl()">COPIAR LINK PERMANENTE</button>
+        <button class="btn" style="background:transparent; color:#555; margin-top:10px; font-size: 10px;" onclick="location.reload()">PROCESAR OTRO</button>
     </div>
 </div>
 
 <script>
+    const IMGBB_API_KEY = '5e0002c33f0bc8cfb533401d4e95999a'; 
+
     let workerUrl = null;
 
-    async function init() {
+    async function initWorker() {
         try {
             const r = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
             workerUrl = URL.createObjectURL(await r.blob());
-        } catch(e) { console.error("Worker load failed"); }
+        } catch(e) { console.error("Worker Error"); }
     }
-    init();
+    initWorker();
 
-    document.getElementById('fileInput').onchange = e => start(e.target.files[0]);
+    document.getElementById('fileInput').onchange = e => process(e.target.files[0]);
 
     async function fromUrl() {
         const url = document.getElementById('urlInput').value.trim();
         if(!url) return;
-        logUI("DOWNLOAD_TASK...", 20);
+        updateUI("DOWNLOADING...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-            if(!res.ok) throw new Error("Servidor de origen denegó el acceso (CORS)");
             const blob = await res.blob();
-            start(blob);
-        } catch(e) { logUI("NET_ERROR", 0, e.message); }
+            process(blob);
+        } catch(e) { updateUI("ERROR LINK", 0); }
     }
 
-    function logUI(msg, pct, err = null) {
+    function updateUI(msg, pct) {
         document.getElementById('monitor').style.display = "block";
-        document.getElementById('status-label').textContent = "STATUS: " + msg;
+        document.getElementById('status-label').textContent = msg;
         document.getElementById('bar').style.width = pct + "%";
-        if(err) {
-            const em = document.getElementById('error-msg');
-            em.style.display = "block";
-            em.textContent = "ERROR_LOG: " + err + " (El servidor externo está caído o saturado. Intenta subir el archivo directamente).";
-        }
     }
 
-    async function start(file) {
+    async function process(file) {
         if(!file) return;
-        document.getElementById('output-card').style.display = "none";
-        document.getElementById('error-msg').style.display = "none";
-
-        // Si es imagen estática (PNG, JPG, WEBP)
-        if (file.type !== 'image/gif') {
-            logUI("PROCESSING_STATIC...", 40);
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = new Image();
-                img.onload = () => {
-                    const c = document.createElement('canvas');
-                    c.width = 48; c.height = 48;
-                    const ctx = c.getContext('2d');
-                    
-                    const tempC = document.createElement('canvas');
-                    tempC.width = img.width; tempC.height = img.height;
-                    const tempCtx = tempC.getContext('2d');
-                    tempCtx.drawImage(img, 0, 0);
-                    const data = tempCtx.getImageData(0,0,img.width,img.height).data;
-                    
-                    let minX = img.width, minY = img.height, maxX = 0, maxY = 0;
-                    for(let i=3; i<data.length; i+=4) {
-                        if(data[i] > 10) {
-                            const x = (i/4) % img.width; const y = Math.floor((i/4) / img.width);
-                            minX = Math.min(minX, x); maxX = Math.max(maxX, x);
-                            minY = Math.min(minY, y); maxY = Math.max(maxY, y);
-                        }
-                    }
-                    if(minX > maxX) { minX=0; minY=0; maxX=img.width; maxY=img.height; }
-                    const w = maxX - minX + 1, h = maxY - minY + 1;
-
-                    const s = Math.min(48/w, 48/h);
-                    const nw = w*s, nh = h*s;
-                    ctx.clearRect(0,0,48,48);
-                    ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
-
-                    logUI("ASSEMBLING_GIF...", 80);
-                    const gif = new GIF({ workers: 2, quality: 10, width: 48, height: 48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
-                    gif.addFrame(c, { delay: 100 });
-                    gif.on('finished', b => upload(b));
-                    gif.render();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-            return;
-        }
-
-        // Si es GIF Animado
-        logUI("PROCESSING_FRAMES...", 40);
+        document.getElementById('result-view').style.display = "none";
+        updateUI("ANALYZING...", 40);
 
         try {
             const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
@@ -307,45 +189,50 @@
                 return o;
             });
 
-            logUI("ASSEMBLING_GIF...", 80);
+            updateUI("ENCODING...", 70);
             const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
             processed.forEach(c => gif.addFrame(c, {delay:45, copy:true, disposal:2}));
-            gif.on('finished', b => upload(b));
+            
+            gif.on('finished', b => uploadImgBB(b));
             gif.render();
-        } catch(e) { logUI("PROCESS_FAIL", 0, e.message); }
+        } catch(e) { updateUI("PROCESS ERROR", 0); }
     }
 
-    async function upload(blob) {
-        logUI("CLOUD_UPLOADING...", 95);
-        const fd = new FormData();
-        fd.append('reqtype', 'fileupload');
-        fd.append('time', '72h');
-        fd.append('fileToUpload', blob, 'sticker.gif');
+    async function uploadImgBB(blob) {
+        updateUI("UPLOADING PERMANENT...", 90);
+        
+        const formData = new FormData();
+        formData.append('image', blob);
 
         try {
-            const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method: 'POST', body: fd });
-            if (!res.ok) throw new Error("Litterbox Server Error (500). El servidor de almacenamiento está saturado.");
-            
-            const url = await res.text();
-            if(url.includes('http')) {
-                logUI("SUCCESS", 100);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                updateUI("SUCCESS", 100);
                 setTimeout(() => {
                     document.getElementById('monitor').style.display = "none";
-                    document.getElementById('output-card').style.display = "block";
-                    document.getElementById('final-img').src = url;
-                    document.getElementById('final-url').value = url;
-                }, 500);
+                    document.getElementById('result-view').style.display = "block";
+                    document.getElementById('preview-img').src = data.data.url;
+                    document.getElementById('final-url').value = data.data.url;
+                }, 400);
             } else {
-                throw new Error("Respuesta inválida del servidor.");
+                throw new Error();
             }
-        } catch(e) { logUI("UPLOAD_FAIL", 0, e.message); }
+        } catch(e) {
+            updateUI("UPLOAD FAILED", 0);
+            alert("Error al subir a ImgBB. Revisa tu API Key.");
+        }
     }
 
-    function copyResult() {
+    function copyUrl() {
         const i = document.getElementById('final-url');
         i.select();
         document.execCommand('copy');
-        alert("Enlace copiado.");
+        alert("¡Enlace permanente copiado!");
     }
 </script>
 </body>
