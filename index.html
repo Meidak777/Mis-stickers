@@ -8,55 +8,78 @@
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap');
-        :root { --accent: #5865F2; --bg: #0d0e10; --panel: #16171a; --border: #2d2f35; --text: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; box-sizing: border-box; }
-        .card { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); text-align: center; box-sizing: border-box; }
-        h1 { font-size: 22px; margin: 0 0 20px; letter-spacing: -1px; }
-        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; cursor: pointer; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
-        .upload-zone:hover { border-color: var(--accent); }
+        :root { --accent: #5865F2; --bg: #0d0e10; --panel: #16171a; --border: #2d2f35; --text: #ffffff; --success: #23a559; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .terminal { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; box-sizing: border-box; }
+        .tag { position: absolute; top: -10px; left: 20px; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 10px; border-radius: 4px; font-weight: bold; }
+        h1 { font-size: 24px; font-weight: 900; margin: 0 0 10px; letter-spacing: -1px; }
+        .sub { color: #8e9297; font-size: 13px; margin-bottom: 25px; }
+        .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; background: rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .drop-zone:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
+        .input-box { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
         .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 12px; background: var(--accent); color: white; box-sizing: border-box; }
-        #monitor { display: none; margin-top: 15px; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-align: left; background: #000; padding: 10px; border-radius: 8px; }
-        .progress-bar { height: 4px; background: var(--accent); width: 0%; margin-top: 8px; transition: 0.3s; }
-        #result { display: none; margin-top: 20px; }
-        .preview { width: 60px; height: 60px; background: #000; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--border); }
+        #monitor { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+        .bar-bg { height: 4px; background: #222; margin-top: 10px; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
+        #result { display: none; margin-top: 25px; text-align: center; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .preview { width: 64px; height: 64px; background: #000; border: 1px solid var(--border); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
         .preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
+        .copy-btn { background: var(--success); }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="terminal">
+    <div class="tag">STK-48 Master v5.5</div>
     <h1>STK-48 MASTER</h1>
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 30px;">🖼️</div>
-        <b>CARGAR IMAGEN / GIF</b>
+    <div class="sub">Conversor estable de stickers 48x48.</div>
+
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size: 28px;">📦</div>
+        <div style="font-weight: bold; margin-top: 10px;">SUBIR ARCHIVO</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
+    <input type="text" id="urlInput" class="input-box" placeholder="https://enlace-directo-a-imagen.gif">
+    <button class="btn" onclick="fromUrl()">INICIAR SECUENCIA</button>
+
     <div id="monitor">
-        <div id="status">ESTADO: ESPERANDO</div>
-        <div style="background:#222; height:4px; margin-top:8px;"><div class="progress-bar" id="bar"></div></div>
+        <div id="status">ESTADO: ESPERANDO...</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
     </div>
 
     <div id="result">
-        <div class="preview"><img id="final-gif" src="" alt=""></div>
-        <button class="btn" onclick="downloadGif()">DESCARGAR STICKER 48x48</button>
-        <p style="font-size: 10px; color: #555; margin-top: 10px;">Tamaño real: 48x48 píxeles</p>
+        <div class="preview"><img id="final-img" src="" alt=""></div>
+        <input type="text" id="final-url" class="input-box" readonly style="text-align: center; color: var(--accent);">
+        <button class="btn copy-btn" onclick="copyLink()">COPIAR ENLACE GIF</button>
+        <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">PROCESAR OTRO</button>
     </div>
 </div>
 
 <script>
     let workerBlobUrl = null;
-    let currentBlob = null;
 
-    async function setupEngine() {
+    async function loadEngine() {
         try {
             const r = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
             workerBlobUrl = URL.createObjectURL(await r.blob());
-        } catch(e) { console.error("Worker load error"); }
+        } catch(e) { console.error("Error al cargar motor."); }
     }
-    setupEngine();
+    loadEngine();
 
-    document.getElementById('fileInput').onchange = e => process(e.target.files[0]);
+    document.getElementById('fileInput').onchange = e => start(e.target.files[0]);
+
+    async function fromUrl() {
+        const url = document.getElementById('urlInput').value.trim();
+        if(!url) return;
+        updateUI("DESCARGANDO...", 20);
+        try {
+            const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+            const blob = await res.blob();
+            start(blob);
+        } catch(e) { updateUI("ERROR LINK", 0); }
+    }
 
     function updateUI(msg, pct) {
         document.getElementById('monitor').style.display = "block";
@@ -64,8 +87,8 @@
         document.getElementById('bar').style.width = pct + "%";
     }
 
-    async function process(file) {
-        if (!file) return;
+    async function start(file) {
+        if(!file) return;
         document.getElementById('result').style.display = "none";
 
         // Si es una imagen estática (PNG, JPG, WEBP)
@@ -101,23 +124,18 @@
                     ctx.clearRect(0,0,48,48);
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    updateUI("GENERANDO GIF...", 85);
+                    updateUI("ENCODING MASTER GIF...", 80);
                     const gif = new GIF({
                         workers: 2,
-                        quality: 1,
+                        quality: 4,
                         width: 48,
                         height: 48,
                         workerScript: workerBlobUrl,
-                        transparent: 'rgba(0,0,0,0)'
+                        transparent: 'rgba(0,0,0,0)',
+                        repeat: 0
                     });
                     gif.addFrame(c, { delay: 100 });
-                    gif.on('finished', blob => {
-                        currentBlob = blob;
-                        updateUI("SISTEMA OK", 100);
-                        document.getElementById('monitor').style.display = "none";
-                        document.getElementById('result').style.display = "block";
-                        document.getElementById('final-gif').src = URL.createObjectURL(blob);
-                    });
+                    gif.on('finished', blob => upload(blob));
                     gif.render();
                 };
                 img.src = e.target.result;
@@ -127,18 +145,13 @@
         }
 
         // Si es GIF Animado
-        updateUI("EXTRAYENDO FOTOGRAMAS...", 30);
+        updateUI("EXTRAYENDO FRAMES...", 40);
 
         try {
-            const frames = await gifFrames({ 
-                url: URL.createObjectURL(file), 
-                frames: 'all', 
-                outputType: 'canvas', 
-                cumulative: true 
-            });
-
+            const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
+            
             let x1=Infinity, y1=Infinity, x2=-Infinity, y2=-Infinity;
-            const tempCanvases = frames.map(f => {
+            const rawCanvases = frames.map(f => {
                 const c = f.getImage();
                 const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
                 for(let i=3; i<d.length; i+=4) {
@@ -151,36 +164,34 @@
                 return c;
             });
 
-            if(x1===Infinity){ x1=0; y1=0; x2=tempCanvases[0].width; y2=tempCanvases[0].height; }
+            if(x1===Infinity){ x1=0; y1=0; x2=rawCanvases[0].width; y2=rawCanvases[0].height; }
             const w=x2-x1+1, h=y2-y1+1;
 
-            updateUI("LIMPIANDO ESTELA FANTASMA...", 60);
+            updateUI("LIMPIANDO ESTELAS...", 60);
 
-            const processed = tempCanvases.map(c => {
-                const o = document.createElement('canvas');
-                o.width = 48; o.height = 48;
-                const ctx = o.getContext('2d');
-                
-                ctx.clearRect(0, 0, 48, 48);
-                
+            const processed = rawCanvases.map(c => {
+                const out = document.createElement('canvas');
+                out.width = 48; out.height = 48;
+                const ctx = out.getContext('2d');
+                ctx.clearRect(0,0,48,48);
                 const s = Math.min(48/w, 48/h);
                 const nw = w*s, nh = h*s;
-                
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(c, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
-                return o;
+                return out;
             });
 
-            updateUI("RE-CODIFICANDO GIF...", 85);
+            updateUI("ENCODING MASTER GIF...", 80);
 
             const gif = new GIF({
                 workers: 2,
-                quality: 1,
+                quality: 4,
                 width: 48,
                 height: 48,
                 workerScript: workerBlobUrl,
-                transparent: 'rgba(0,0,0,0)'
+                transparent: 'rgba(0,0,0,0)',
+                repeat: 0
             });
 
             processed.forEach(canvas => {
@@ -191,25 +202,43 @@
                 });
             });
 
-            gif.on('finished', blob => {
-                currentBlob = blob;
+            gif.on('finished', blob => upload(blob));
+            gif.render();
+
+        } catch (e) { updateUI("ERROR PROCESO", 0); }
+    }
+
+    async function upload(blob) {
+        updateUI("SUBIENDO A CATBOX...", 95);
+        
+        const fd = new FormData();
+        fd.append('reqtype', 'fileupload');
+        fd.append('fileToUpload', blob, 'sticker.gif');
+
+        try {
+            const res = await fetch('https://catbox.moe/user/api.php', {
+                method: 'POST',
+                body: fd
+            });
+            const url = await res.text();
+
+            if(url.includes('http')) {
                 updateUI("SISTEMA OK", 100);
                 document.getElementById('monitor').style.display = "none";
                 document.getElementById('result').style.display = "block";
-                document.getElementById('final-gif').src = URL.createObjectURL(blob);
-            });
-
-            gif.render();
-
-        } catch (e) { updateUI("ERROR CRÍTICO", 0); }
+                document.getElementById('final-img').src = url;
+                document.getElementById('final-url').value = url;
+            } else {
+                throw new Error();
+            }
+        } catch (e) { updateUI("ERROR SUBIDA", 0); }
     }
 
-    function downloadGif() {
-        if(!currentBlob) return;
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(currentBlob);
-        a.download = "sticker_48x48.gif";
-        a.click();
+    function copyLink() {
+        const i = document.getElementById('final-url');
+        i.select();
+        document.execCommand('copy');
+        alert("Enlace permanente copiado.");
     }
 </script>
 </body>
