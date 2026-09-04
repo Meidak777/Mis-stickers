@@ -3,69 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STK-48 CORE | Industrial Processor</title>
+    <title>STK-48 MULTI-CORE</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap');
-        :root { --accent: #5865F2; --bg: #0d0e10; --panel: #16171a; --border: #2d2f35; --text: #ffffff; --success: #23a559; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        .main-card { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; box-sizing: border-box; }
-        .status-tag { position: absolute; top: -10px; left: 20px; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 4px; }
-        h1 { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; }
-        .desc { color: #8e9297; font-size: 12px; margin-bottom: 25px; }
-        .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px; box-sizing: border-box; }
+        
+        :root {
+            --accent: #5865F2;
+            --bg: #0d0e10;
+            --panel: #16171a;
+            --border: #2d2f35;
+            --text: #ffffff;
+            --success: #23a559;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 100%; max-width: 500px;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 20px; padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .status-tag {
+            position: absolute; top: -10px; left: 20px;
+            background: var(--accent); color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; padding: 2px 10px; border-radius: 4px; font-weight: bold;
+        }
+
+        h1 { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -1px; text-align: center; }
+        .desc { color: #8e9297; font-size: 13px; margin-bottom: 25px; text-align: center; }
+
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: 12px;
+            padding: 40px 20px; text-align: center;
+            background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
         .upload-area:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
-        .input-field { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 10px; outline: none; box-sizing: border-box; }
-        .btn { width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 11px; margin-bottom: 8px; transition: 0.2s; box-sizing: border-box; }
-        .btn-primary { background: var(--accent); color: #fff; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-download { background: #4f545c; color: white; }
-        #monitor { display: none; margin-top: 15px; padding: 12px; background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-        .bar-bg { height: 4px; background: #1a1a1a; margin-top: 8px; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
-        #result-view { display: none; margin-top: 25px; text-align: center; }
-        .preview-circle { width: 64px; height: 64px; background: #000; border: 1px solid var(--border); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-        .preview-circle img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
+
+        #monitor {
+            display: none; margin-top: 15px; padding: 15px;
+            background: #000; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+        }
+
+        .bar-bg { height: 6px; background: #1a1a1a; margin-top: 10px; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+        #results-list {
+            width: 100%; max-width: 500px; margin-top: 30px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .result-item {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 15px;
+            display: flex; align-items: center; gap: 15px;
+            animation: slideIn 0.3s ease-out;
+            box-sizing: border-box;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } }
+
+        .result-preview {
+            width: 54px; height: 54px; background: #000;
+            border: 1px solid var(--border); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+
+        .result-preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
+
+        .result-info { flex-grow: 1; overflow: hidden; }
+        .result-name { font-size: 11px; color: #8e9297; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .copy-btn {
+            background: var(--accent); color: white; border: none;
+            padding: 8px 12px; border-radius: 6px; font-size: 10px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase;
+        }
+
+        .copy-btn.copied { background: var(--success); }
+
+        .btn-clear {
+            background: transparent; color: #555; border: 1px solid #333;
+            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px;
+            margin-top: 20px; width: 100%; max-width: 500px; box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-<div class="main-card">
-    <div class="status-tag">STK-48 CORE v9.0</div>
-    <h1>STK-48 MASTER</h1>
-    <div class="desc">Eliminación absoluta de rastros en transparencias.</div>
+<div class="main-container">
+    <div class="status-tag">STK-48 MULTI-CORE v10.1</div>
+    <h1>STK-48 MULTI</h1>
+    <div class="desc">Importación múltiple y limpieza de rastro activa.</div>
 
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 24px;">🛡️</div>
-        <div style="font-weight: bold; margin-top: 8px; font-size: 13px;">CARGAR GIF / IMAGEN</div>
-        <input type="file" id="fileInput" hidden accept="image/*">
+        <div style="font-size: 30px;">📚</div>
+        <div style="font-weight: bold; margin-top: 10px;">SELECCIONAR VARIAS IMÁGENES / GIFS</div>
+        <div style="font-size: 11px; color: #555; margin-top: 5px;">Puedes subir hasta 20 archivos</div>
+        <input type="file" id="fileInput" hidden accept="image/*" multiple>
     </div>
-
-    <input type="text" id="urlInput" class="input-field" placeholder="INPUT SOURCE URL...">
-    <button class="btn btn-primary" onclick="fromUrl()">INICIAR PURGA DE CAPAS</button>
 
     <div id="monitor">
-        <div id="status-label">IDLE...</div>
+        <div id="status-label">ESPERANDO ARCHIVOS...</div>
         <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
-    </div>
-
-    <div id="result-view">
-        <div class="preview-circle"><img id="preview-img" src="" alt=""></div>
-        
-        <button class="btn btn-download" id="dlBtn">💾 GUARDAR STICKER (LOCAL)</button>
-        <div style="margin: 15px 0; border-bottom: 1px solid #333;"></div>
-        
-        <input type="text" id="final-url" class="input-field" readonly style="text-align: center;" placeholder="Subiendo recurso...">
-        <button class="btn btn-success" id="copyBtn" onclick="copyUrl()">COPIAR ENLACE PERMANENTE</button>
-        
-        <button class="btn" style="background:transparent; color:#555; margin-top:10px; font-size: 10px;" onclick="location.reload()">NUEVO PROCESO</button>
     </div>
 </div>
 
-<script>
-    const IMGBB_KEY = '5e0002c33f0bc8cfb533401d4e95999a'; 
+<div id="results-list"></div>
 
+<button class="btn-clear" onclick="location.reload()">LIMPIAR TODO</button>
+
+<script>
+    const IMGBB_KEY = '5e0002c33f0bc8cfb533401d4e95999a';
     let workerUrl = null;
 
     async function init() {
@@ -76,117 +143,137 @@
     }
     init();
 
-    document.getElementById('fileInput').onchange = e => process(e.target.files[0]);
-
-    async function fromUrl() {
-        const url = document.getElementById('urlInput').value.trim();
-        if(!url) return;
-        updateUI("BAJANDO SOURCE...", 20);
-        try {
-            const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-            const blob = await res.blob();
-            process(blob);
-        } catch(e) { updateUI("ERROR LINK", 0); }
-    }
+    document.getElementById('fileInput').onchange = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        
+        document.getElementById('monitor').style.display = "block";
+        
+        for (let i = 0; i < files.length; i++) {
+            const currentFile = files[i];
+            const progressBase = (i / files.length) * 100;
+            
+            updateUI(`PROCESANDO ${i + 1}/${files.length}: ${currentFile.name}`, progressBase);
+            await processSingleFile(currentFile);
+        }
+        
+        updateUI("TODOS LOS ARCHIVOS COMPLETADOS", 100);
+    };
 
     function updateUI(msg, pct) {
-        document.getElementById('monitor').style.display = "block";
-        document.getElementById('status-label').textContent = "ESTADO: " + msg;
+        document.getElementById('status-label').textContent = msg;
         document.getElementById('bar').style.width = pct + "%";
     }
 
-    async function process(file) {
-        if(!file) return;
-        document.getElementById('result-view').style.display = "none";
-        updateUI("EXTRAYENDO METADATOS...", 35);
+    async function processSingleFile(file) {
+        return new Promise(async (resolve) => {
+            try {
+                // Si es una imagen estática (PNG, JPG, WEBP)
+                if (file.type !== 'image/gif') {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const img = new Image();
+                        img.onload = async () => {
+                            const c = document.createElement('canvas');
+                            c.width = 48; c.height = 48;
+                            const ctx = c.getContext('2d');
+                            
+                            const tempC = document.createElement('canvas');
+                            tempC.width = img.width; tempC.height = img.height;
+                            const tempCtx = tempC.getContext('2d');
+                            tempCtx.drawImage(img, 0, 0);
+                            const data = tempCtx.getImageData(0,0,img.width,img.height).data;
+                            
+                            let minX = img.width, minY = img.height, maxX = 0, maxY = 0;
+                            for(let i=3; i<data.length; i+=4) {
+                                if(data[i] > 10) {
+                                    const x = (i/4) % img.width; const y = Math.floor((i/4) / img.width);
+                                    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+                                    minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+                                }
+                            }
+                            if(minX > maxX) { minX=0; minY=0; maxX=img.width; maxY=img.height; }
+                            const w = maxX - minX + 1, h = maxY - minY + 1;
 
-        try {
-            const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
-            
-            let x1=Infinity, y1=Infinity, x2=-Infinity, y2=-Infinity;
-            const analyzedData = frames.map(f => {
-                const c = f.getImage();
-                const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-                for(let i=3; i<d.length; i+=4) {
-                    if(d[i]>50) {
-                        const x=(i/4)%c.width, y=Math.floor((i/4)/c.width);
-                        x1=Math.min(x1,x); x2=Math.max(x2,x);
-                        y1=Math.min(y1,y); y2=Math.max(y2,y);
-                    }
+                            const s = Math.min(48/w, 48/h);
+                            const nw = w*s, nh = h*s;
+                            ctx.clearRect(0,0,48,48);
+                            ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
+
+                            const gif = new GIF({ workers: 2, quality: 1, width: 48, height: 48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
+                            gif.addFrame(c, { delay: 100 });
+                            gif.on('finished', async (blob) => {
+                                const url = await uploadToImgBB(blob);
+                                addResultToUI(url, file.name);
+                                resolve();
+                            });
+                            gif.render();
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    return;
                 }
-                return { canvas: c, delay: (f.frameInfo.delay * 10) || 50 }; 
-            });
 
-            if(x1===Infinity){ x1=0; y1=0; x2=analyzedData[0].canvas.width; y2=analyzedData[0].canvas.height; }
-            const w=x2-x1+1, h=y2-y1+1;
-
-            updateUI("PURGANDO PIXELES FANTASMA...", 60);
-
-            const processedFrames = analyzedData.map(item => {
-                const out = document.createElement('canvas');
-                out.width=48; out.height=48;
-                const ctx = out.getContext('2d');
+                // Si es GIF Animado
+                const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: false });
                 
-                ctx.clearRect(0,0,48,48);
-                
-                const sc = Math.min(48/w, 48/h);
-                const nw=w*sc, nh=h*sc;
-                
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(item.canvas, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
-
-                const imgData = ctx.getImageData(0,0,48,48);
-                const data = imgData.data;
-                for (let i = 0; i < data.length; i += 4) {
-                    if (data[i + 3] < 128) {
-                        data[i + 3] = 0;
-                    } else {
-                        data[i + 3] = 255;
+                let x1=Infinity, y1=Infinity, x2=-Infinity, y2=-Infinity;
+                const analyzedData = frames.map(f => {
+                    const c = f.getImage();
+                    const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+                    for(let i=3; i<d.length; i+=4) {
+                        if(d[i]>15) {
+                            const x=(i/4)%c.width, y=Math.floor((i/4)/c.width);
+                            x1=Math.min(x1,x); x2=Math.max(x2,x);
+                            y1=Math.min(y1,y); y2=Math.max(y2,y);
+                        }
                     }
-                }
-                ctx.putImageData(imgData, 0, 0);
+                    return { canvas: c, delay: (f.frameInfo.delay * 10) || 50 }; 
+                });
 
-                return { canvas: out, delay: item.delay };
-            });
+                if(x1===Infinity){ x1=0; y1=0; x2=analyzedData[0].canvas.width; y2=analyzedData[0].canvas.height; }
+                const w=x2-x1+1, h=y2-y1+1;
 
-            updateUI("CODIFICANDO MASTER GIF...", 85);
-            const gif = new GIF({ 
-                workers: 2, 
-                quality: 1, 
-                width: 48, 
-                height: 48, 
-                workerScript: workerUrl, 
-                transparent: 'rgba(0,0,0,0)',
-                repeat: 0 
-            });
-            
-            processedFrames.forEach(f => {
-                gif.addFrame(f.canvas, { delay: f.delay, copy: true, disposal: 2 });
-            });
-            
-            gif.on('finished', b => showResult(b));
-            gif.render();
-        } catch(e) { updateUI("ERROR_SISTEMA", 0); console.error(e); }
-    }
+                const processedFrames = analyzedData.map(item => {
+                    const out = document.createElement('canvas');
+                    out.width=48; out.height=48;
+                    const ctx = out.getContext('2d');
+                    
+                    // Limpieza absoluta por cada fotograma individual (evita rastros de frames previos)
+                    ctx.clearRect(0,0,48,48);
+                    
+                    const sc = Math.min(48/w, 48/h);
+                    const nw=w*sc, nh=h*sc;
+                    
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(item.canvas, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-    function showResult(blob) {
-        updateUI("SISTEMA LISTO", 100);
-        setTimeout(() => {
-            document.getElementById('monitor').style.display = "none";
-            document.getElementById('result-view').style.display = "block";
-            const url = URL.createObjectURL(blob);
-            document.getElementById('preview-img').src = url;
-            
-            document.getElementById('dlBtn').onclick = () => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `stk48_clean_${Date.now()}.gif`;
-                a.click();
-            };
+                    return { canvas: out, delay: item.delay };
+                });
 
-            uploadToImgBB(blob);
-        }, 400);
+                const gif = new GIF({ 
+                    workers: 2, quality: 1, width: 48, height: 48, 
+                    workerScript: workerUrl, transparent: 'rgba(0,0,0,0)', repeat: 0 
+                });
+                
+                processedFrames.forEach(f => {
+                    gif.addFrame(f.canvas, { delay: f.delay, copy: false, disposal: 2 });
+                });
+                
+                gif.on('finished', async (blob) => {
+                    const url = await uploadToImgBB(blob);
+                    addResultToUI(url, file.name);
+                    resolve();
+                });
+                
+                gif.render();
+            } catch(e) {
+                console.error("Fallo en un archivo:", e);
+                resolve();
+            }
+        });
     }
 
     async function uploadToImgBB(blob) {
@@ -195,18 +282,39 @@
         try {
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: fd });
             const data = await res.json();
-            if(data.success) {
-                document.getElementById('final-url').value = data.data.url;
-            }
-        } catch (e) { document.getElementById('final-url').value = "Error en enlace."; }
+            return data.success ? data.data.url : null;
+        } catch (e) { return null; }
     }
 
-    function copyUrl() {
-        const i = document.getElementById('final-url');
-        if(!i.value.includes('http')) return;
-        i.select();
+    function addResultToUI(url, name) {
+        if (!url) return;
+        const list = document.getElementById('results-list');
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+            <div class="result-preview"><img src="${url}"></div>
+            <div class="result-info">
+                <div class="result-name">${name}</div>
+                <button class="copy-btn" onclick="copyResult('${url}', this)">Copiar Link</button>
+            </div>
+        `;
+        list.prepend(item);
+    }
+
+    function copyResult(url, btn) {
+        const temp = document.createElement('input');
+        document.body.appendChild(temp);
+        temp.value = url;
+        temp.select();
         document.execCommand('copy');
-        alert("Enlace copiado.");
+        document.body.removeChild(temp);
+        
+        btn.textContent = "¡COPIADO!";
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = "COPIAR LINK";
+            btn.classList.remove('copied');
+        }, 2000);
     }
 </script>
 </body>
