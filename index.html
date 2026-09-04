@@ -3,282 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Lab Ultra | Pro Edition</title>
+    <title>STK-48 CORE | Sticker Processor</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
 
         :root {
-            --primary: #5865F2;
-            --primary-glow: rgba(88, 101, 242, 0.5);
-            --accent: #eb459e;
-            --success: #23a559;
-            --bg-dark: #0f1012;
-            --glass: rgba(30, 31, 34, 0.8);
-            --border: rgba(255, 255, 255, 0.1);
+            --accent: #5865F2;
+            --accent-light: #707df4;
+            --bg: #0a0a0c;
+            --panel: #16171a;
+            --border: #2d2f35;
+            --text-main: #ffffff;
+            --text-dim: #8e9297;
         }
 
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; transition: all 0.25s ease; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: #fff;
+            background-color: var(--bg);
+            color: var(--text-main);
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .orb {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--primary-glow);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
-            animation: move 20s infinite alternate;
-        }
-
-        @keyframes move {
-            from { transform: translate(-20%, -20%); }
-            to { transform: translate(20%, 20%); }
-        }
-
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 1;
-            box-sizing: border-box;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 24px 24px 0 0;
-        }
-
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-weight: 800; font-size: 28px; margin: 0; background: linear-gradient(to right, #fff, #949ba4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header p { color: #949ba4; font-size: 14px; margin-top: 8px; }
-
-        .drop-zone {
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 40px 20px;
-            text-align: center;
-            background: rgba(0,0,0,0.2);
-            cursor: pointer;
-            position: relative;
             overflow: hidden;
         }
 
-        .drop-zone:hover {
-            border-color: var(--primary);
-            background: rgba(88, 101, 242, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .drop-zone svg { width: 48px; height: 48px; fill: var(--primary); margin-bottom: 12px; }
-
-        .input-group { margin-top: 20px; position: relative; }
-        input[type="text"] {
+        .main-frame {
             width: 100%;
-            background: rgba(0,0,0,0.3);
+            max-width: 450px;
+            background: var(--panel);
             border: 1px solid var(--border);
-            padding: 14px 18px;
             border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             box-sizing: border-box;
         }
 
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
+        .main-frame::before {
+            content: 'STK-48 SYSTEM v3.2';
+            position: absolute;
+            top: -25px; left: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .header { margin-bottom: 30px; }
+        .header h1 { font-weight: 900; font-size: 24px; margin: 0; letter-spacing: -0.5px; }
+        .header p { color: var(--text-dim); font-size: 13px; margin: 5px 0 0 0; }
+
+        .upload-zone {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #0e0f11;
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: #111216;
+        }
+
+        .upload-zone svg { width: 32px; fill: var(--text-dim); margin-bottom: 10px; }
+
+        .input-field {
+            width: 100%;
+            background: #0a0a0c;
+            border: 1px solid var(--border);
+            padding: 12px 15px;
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
 
         .btn {
             width: 100%;
             padding: 14px;
-            border-radius: 12px;
+            border-radius: 6px;
             border: none;
             font-weight: 700;
-            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
+            font-size: 12px;
             box-sizing: border-box;
         }
 
-        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .btn-main { background: var(--accent); color: white; }
+        .btn-main:hover { background: var(--accent-light); transform: translateY(-1px); }
 
-        .status-box {
+        .engine-status {
             display: none;
-            margin-top: 25px;
-            background: rgba(0,0,0,0.2);
-            padding: 20px;
-            border-radius: 16px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #000;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
         }
 
-        .loader {
-            height: 6px;
+        .progress-container {
+            height: 4px;
             width: 100%;
-            background: #2b2d31;
-            border-radius: 10px;
-            overflow: hidden;
+            background: #222;
             margin-top: 10px;
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .loader-bar {
+        .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            box-shadow: 0 0 10px var(--primary);
+            background: var(--accent);
             transition: width 0.3s ease;
         }
 
-        .result-card {
+        .result-view {
             display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .preview-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .sticker-preview {
-            width: 80px; height: 80px;
-            background: #000;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sticker-preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
-
-        .btn-success { background: var(--success); color: #fff; width: 100%; }
-
-        .footer-tag {
+            margin-top: 25px;
             text-align: center;
-            font-size: 10px;
-            letter-spacing: 2px;
-            color: #949ba4;
-            margin-top: 30px;
-            opacity: 0.5;
-            text-transform: uppercase;
+            animation: fadeIn 0.4s ease-out;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .preview-circle {
+            width: 70px; height: 70px;
+            background: #000;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .preview-circle img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
+
+        .copy-btn { background: #23a559; color: white; margin-top: 10px; }
+
+        #errorLog { color: #ff4747; font-size: 11px; margin-top: 10px; font-family: monospace; display: none; word-break: break-all; }
     </style>
 </head>
 <body>
 
-<div class="orb"></div>
-
-<div class="container">
+<div class="main-frame">
     <div class="header">
-        <h1>Sticker Lab <span style="color:var(--primary)">Ultra</span></h1>
-        <p>Procesa, optimiza y crea stickers de 48x48</p>
+        <h1>STK-48 ENGINE</h1>
+        <p>Procesamiento de imagen industrial 48x48px.</p>
     </div>
 
-    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-        <div style="font-weight: 600;">Suelte su imagen aquí</div>
-        <div style="font-size: 12px; color: #949ba4; margin-top: 5px;">Soporta GIF, PNG, WEBP</div>
+    <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24"><path d="M11 15h2v-3h3l-4-4-4 4h3z"/><path d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"/></svg>
+        <div style="font-size: 13px; font-weight: bold;">CARGAR ARCHIVO LOCAL</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <div class="input-group">
-        <input type="text" id="urlInput" placeholder="https://ejemplo.com/imagen.png">
-        <button class="btn btn-primary" onclick="handleUrl()">PROCESAR DESDE LINK</button>
+    <input type="text" id="urlInput" class="input-field" placeholder="INPUT SOURCE URL...">
+    <button class="btn btn-main" onclick="handleRemoteUrl()">INICIAR PROCESO</button>
+
+    <div class="engine-status" id="statusBox">
+        <div id="statusLabel" style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">ESPERANDO...</div>
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        <div id="errorLog"></div>
     </div>
 
-    <div class="status-box" id="statusBox">
-        <div id="statusText" style="font-size: 13px; font-weight: 600;">Iniciando motor...</div>
-        <div class="loader"><div class="loader-bar" id="progressBar"></div></div>
-    </div>
-
-    <div class="result-card" id="resultCard">
-        <div class="preview-wrapper">
-            <div class="sticker-preview">
-                <img id="finalImg" src="" alt="">
-            </div>
+    <div class="result-view" id="resultView">
+        <div class="preview-circle">
+            <img id="finalPreview" src="" alt="">
         </div>
-        <input type="text" id="resultUrl" readonly style="margin-bottom: 15px; text-align: center; border-style: dashed;">
-        <button class="btn btn-success" id="copyBtn" onclick="copyResult()">COPIAR ENLACE GIF</button>
-        <button class="btn" style="background: transparent; color: #949ba4; font-size: 12px;" onclick="location.reload()">PROCESAR OTRO</button>
+        <input type="text" id="outputUrl" class="input-field" readonly style="text-align: center; color: var(--accent);">
+        <button class="btn copy-btn" id="btnCopy" onclick="copyResult()">COPIAR ENLACE DIRECTO</button>
+        <button class="btn" style="background: transparent; color: #555;" onclick="location.reload()">RESET SYSTEM</button>
     </div>
-
-    <div class="footer-tag">AI Powered Processing • v3.0 Ultra</div>
 </div>
 
 <script>
-    const fileInput = document.getElementById('fileInput');
     const statusBox = document.getElementById('statusBox');
     const progressBar = document.getElementById('progressBar');
-    const statusText = document.getElementById('statusText');
-    const resultCard = document.getElementById('resultCard');
+    const statusLabel = document.getElementById('statusLabel');
+    const errorLog = document.getElementById('errorLog');
+    const resultView = document.getElementById('resultView');
 
-    fileInput.onchange = e => startProcessing(e.target.files[0]);
+    document.getElementById('fileInput').onchange = e => engineStart(e.target.files[0]);
 
     const dz = document.getElementById('dropZone');
-    dz.ondragover = e => { e.preventDefault(); dz.style.borderColor = "var(--primary)"; };
+    dz.ondragover = e => { e.preventDefault(); dz.style.borderColor = "var(--accent)"; };
     dz.ondragleave = () => { dz.style.borderColor = "var(--border)"; };
-    dz.ondrop = e => { e.preventDefault(); startProcessing(e.dataTransfer.files[0]); };
+    dz.ondrop = e => { e.preventDefault(); engineStart(e.dataTransfer.files[0]); };
 
-    async function handleUrl() {
+    async function handleRemoteUrl() {
         const url = document.getElementById('urlInput').value.trim();
-        if (!url) return;
-        updateUI("Descargando...", 20);
+        if(!url) return;
+        updateUI("DOWNLOAD_REMOTE_SOURCE...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+            if(!res.ok) throw new Error("No se pudo descargar");
             const blob = await res.blob();
-            startProcessing(blob);
-        } catch (e) { updateUI("Error de descarga", 0, true); }
+            engineStart(blob);
+        } catch (e) { updateUI("LINK_FETCH_ERROR", 0, e.message); }
     }
 
-    function updateUI(msg, percent, error = false) {
+    function updateUI(msg, percent, err = null) {
         statusBox.style.display = "block";
-        statusText.textContent = msg;
-        statusText.style.color = error ? "#ff4747" : "#fff";
+        statusLabel.textContent = msg;
         progressBar.style.width = percent + "%";
-        if(error) progressBar.style.background = "#ff4747";
+        if(err) {
+            errorLog.style.display = "block";
+            errorLog.textContent = `CRITICAL_ERROR: ${err}`;
+            progressBar.style.background = "#ff4747";
+        }
     }
 
-    async function startProcessing(file) {
-        if (!file) return;
-        resultCard.style.display = "none";
+    async function engineStart(file) {
+        if(!file) return;
+        resultView.style.display = "none";
+        errorLog.style.display = "none";
 
-        // Si es una imagen estática (PNG, JPG, WebP)
+        // Si es una imagen estática (PNG, JPG, WEBP) procesarla de forma limpia sin gif-frames
         if (file.type !== 'image/gif') {
-            updateUI("Procesando imagen estática...", 40);
+            updateUI("CORE_STATIC_PROCESSING...", 40);
             const reader = new FileReader();
             reader.onload = e => {
                 const img = new Image();
@@ -309,10 +265,17 @@
                     ctx.clearRect(0,0,48,48);
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    updateUI("Empaquetando GIF...", 80);
-                    const gif = new GIF({ workers: 2, quality: 5, width: 48, height: 48, workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js', transparent: 'rgba(0,0,0,0)' });
+                    updateUI("PACKING_STK_FORMAT...", 80);
+                    const gif = new GIF({
+                        workers: 2,
+                        quality: 4,
+                        width: 48,
+                        height: 48,
+                        workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js',
+                        transparent: 'rgba(0,0,0,0)'
+                    });
                     gif.addFrame(c, { delay: 100 });
-                    gif.on('finished', blob => uploadFile(blob));
+                    gif.on('finished', blob => uploadEngine(blob));
                     gif.render();
                 };
                 img.src = e.target.result;
@@ -321,30 +284,36 @@
             return;
         }
 
-        // Si es un GIF Animado
-        updateUI("Extrayendo Frames...", 30);
+        // Si es GIF Animado
+        updateUI("EXTRACTING_FRAMES...", 30);
+
         try {
-            const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
-            
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            const frames = await gifFrames({ 
+                url: URL.createObjectURL(file), 
+                frames: 'all', 
+                outputType: 'canvas', 
+                cumulative: true 
+            });
+
+            let mX = Infinity, mY = Infinity, maxX = -Infinity, maxY = -Infinity;
             const canvases = frames.map(f => {
                 const c = f.getImage();
                 const ctx = c.getContext('2d');
-                const data = ctx.getImageData(0,0,c.width,c.height).data;
-                for(let i=3; i<data.length; i+=4) {
-                    if(data[i] > 20) {
-                        const x = (i/4) % c.width; const y = Math.floor((i/4) / c.width);
-                        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
-                        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+                const d = ctx.getImageData(0,0,c.width,c.height).data;
+                for(let i=3; i<d.length; i+=4) {
+                    if(d[i] > 20) {
+                        const x = (i/4)%c.width; const y = Math.floor((i/4)/c.width);
+                        mX = Math.min(mX,x); maxX = Math.max(maxX,x);
+                        mY = Math.min(mY,y); maxY = Math.max(maxY,y);
                     }
                 }
                 return c;
             });
 
-            if(minX === Infinity) { minX=0; minY=0; maxX=canvases[0].width; maxY=canvases[0].height; }
-            const w = (maxX - minX) + 1; const h = (maxY - minY) + 1;
+            if(mX === Infinity) { mX=0; mY=0; maxX=canvases[0].width; maxY=canvases[0].height; }
+            const cw = (maxX - mX)+1; const ch = (maxY - mY)+1;
 
-            updateUI("Renderizando 48x48...", 60);
+            updateUI("CORE_RESIZING_48PX...", 60);
 
             const processed = canvases.map(c => {
                 const out = document.createElement('canvas');
@@ -352,24 +321,36 @@
                 const ctx = out.getContext('2d');
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                const s = Math.min(48/w, 48/h);
-                const nw = w*s, nh = h*s;
-                ctx.drawImage(c, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
+                const s = Math.min(48/cw, 48/ch);
+                const nw = cw*s, nh = ch*s;
+                ctx.drawImage(c, mX, mY, cw, ch, (48-nw)/2, (48-nh)/2, nw, nh);
                 return out;
             });
 
-            updateUI("Empaquetando GIF...", 80);
-            const gif = new GIF({ workers: 4, quality: 5, width: 48, height: 48, workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js', transparent: 'rgba(0,0,0,0)' });
+            updateUI("PACKING_STK_FORMAT...", 80);
+
+            const gif = new GIF({
+                workers: 2,
+                quality: 4,
+                width: 48,
+                height: 48,
+                workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js',
+                transparent: 'rgba(0,0,0,0)'
+            });
+
             processed.forEach(c => gif.addFrame(c, {delay: 45, copy: true, disposal: 2}));
             
-            gif.on('finished', blob => uploadFile(blob));
+            gif.on('finished', blob => uploadEngine(blob));
             gif.render();
 
-        } catch (e) { updateUI("Error de proceso", 0, true); }
+        } catch (e) { 
+            updateUI("CORE_CRASH", 0, e.message); 
+            console.error(e);
+        }
     }
 
-    async function uploadFile(blob) {
-        updateUI("Subiendo a la nube...", 95);
+    async function uploadEngine(blob) {
+        updateUI("UPLOADING_TO_CLOUD...", 95);
         const fd = new FormData();
         fd.append('reqtype', 'fileupload');
         fd.append('time', '72h');
@@ -379,25 +360,26 @@
             const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method: 'POST', body: fd });
             const url = await res.text();
             if(url.includes('http')) {
-                updateUI("¡Éxito!", 100);
+                updateUI("PROCESS_COMPLETE", 100);
                 setTimeout(() => {
                     statusBox.style.display = "none";
-                    resultCard.style.display = "block";
-                    document.getElementById('finalImg').src = url;
-                    document.getElementById('resultUrl').value = url;
-                }, 500);
+                    resultView.style.display = "block";
+                    document.getElementById('finalPreview').src = url;
+                    document.getElementById('outputUrl').value = url;
+                }, 400);
+            } else {
+                throw new Error("Cloud rejection");
             }
-        } catch (e) { updateUI("Error de subida", 0, true); }
+        } catch (e) { updateUI("UPLOAD_FAILED", 0, e.message); }
     }
 
     function copyResult() {
-        const input = document.getElementById('resultUrl');
+        const input = document.getElementById('outputUrl');
         input.select();
         document.execCommand('copy');
-        const btn = document.getElementById('copyBtn');
-        btn.textContent = "¡COPIADO!";
-        btn.style.background = "#43b581";
-        setTimeout(() => { btn.textContent = "COPIAR ENLACE GIF"; btn.style.background = "var(--success)"; }, 2000);
+        const btn = document.getElementById('btnCopy');
+        btn.textContent = "COPIADO AL PORTAPAPELES";
+        setTimeout(() => btn.textContent = "COPIAR ENLACE DIRECTO", 2000);
     }
 </script>
 </body>
