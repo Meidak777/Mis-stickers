@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STK-48 MASTER</title>
+    <title>STK-48 MASTER | Core Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
@@ -14,26 +14,25 @@
         .tag { position: absolute; top: -10px; left: 20px; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 10px; border-radius: 4px; font-weight: bold; }
         h1 { font-size: 24px; font-weight: 900; margin: 0 0 10px; letter-spacing: -1px; }
         .sub { color: #8e9297; font-size: 13px; margin-bottom: 25px; }
-        .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; background: rgba(0,0,0,0.2); margin-bottom: 20px; }
-        .drop-zone:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
+        .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; background: rgba(0,0,0,0.2); margin-bottom: 20px; box-sizing: border-box; }
         .input-box { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 12px; background: var(--accent); color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 11px; background: var(--accent); color: white; margin-bottom: 10px; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
         #monitor { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
         .bar-bg { height: 4px; background: #222; margin-top: 10px; border-radius: 4px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
-        #result { display: none; margin-top: 25px; text-align: center; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #result { display: none; margin-top: 25px; text-align: center; }
         .preview { width: 64px; height: 64px; background: #000; border: 1px solid var(--border); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
         .preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
-        .copy-btn { background: var(--success); }
+        .btn-success { background: var(--success); }
+        .btn-download { background: #4f545c; }
     </style>
 </head>
 <body>
 
 <div class="terminal">
-    <div class="tag">STK-48 Master v5.5</div>
+    <div class="tag">STK-48 MASTER v6.5</div>
     <h1>STK-48 MASTER</h1>
-    <div class="sub">Conversor estable de stickers 48x48.</div>
+    <div class="sub">Procesador de stickers con doble salida (Link/PC).</div>
 
     <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
         <div style="font-size: 28px;">📦</div>
@@ -41,39 +40,48 @@
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" class="input-box" placeholder="https://enlace-directo-a-imagen.gif">
-    <button class="btn" onclick="fromUrl()">INICIAR SECUENCIA</button>
+    <input type="text" id="urlInput" class="input-box" placeholder="PEGAR LINK DE IMAGEN...">
+    <button class="btn" onclick="fromUrl()">INICIAR PROCESO</button>
 
     <div id="monitor">
-        <div id="status">ESTADO: ESPERANDO...</div>
+        <div id="status">ESTADO: STANDBY</div>
         <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
     </div>
 
     <div id="result">
         <div class="preview"><img id="final-img" src="" alt=""></div>
-        <input type="text" id="final-url" class="input-box" readonly style="text-align: center; color: var(--accent);">
-        <button class="btn copy-btn" onclick="copyLink()">COPIAR ENLACE GIF</button>
+        
+        <button id="dl-btn" class="btn btn-download">💾 DESCARGAR ARCHIVO .GIF</button>
+        
+        <div style="margin: 15px 0; border-bottom: 1px solid #333;"></div>
+        
+        <input type="text" id="final-url" class="input-box" readonly style="text-align: center; color: var(--accent);" placeholder="Subiendo para link...">
+        <button class="btn btn-success" id="btnCopy" onclick="copyLink()">COPIAR LINK DIRECTO</button>
+        
         <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">PROCESAR OTRO</button>
     </div>
 </div>
 
 <script>
-    let workerBlobUrl = null;
+    const IMGBB_KEY = '5e0002c33f0bc8cfb533401d4e95999a'; 
 
-    async function loadEngine() {
+    let workerBlobUrl = null;
+    let finalBlob = null;
+
+    async function preload() {
         try {
             const r = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
             workerBlobUrl = URL.createObjectURL(await r.blob());
-        } catch(e) { console.error("Error al cargar motor."); }
+        } catch(e) { console.error("Error cargando el motor del GIF."); }
     }
-    loadEngine();
+    preload();
 
     document.getElementById('fileInput').onchange = e => start(e.target.files[0]);
 
     async function fromUrl() {
         const url = document.getElementById('urlInput').value.trim();
         if(!url) return;
-        updateUI("DESCARGANDO...", 20);
+        updateUI("BAJANDO...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
             const blob = await res.blob();
@@ -91,7 +99,7 @@
         if(!file) return;
         document.getElementById('result').style.display = "none";
 
-        // Si es una imagen estática (PNG, JPG, WEBP)
+        // Si es imagen estática (PNG, JPG, WEBP)
         if (file.type !== 'image/gif') {
             updateUI("PROCESANDO IMAGEN...", 40);
             const reader = new FileReader();
@@ -124,18 +132,17 @@
                     ctx.clearRect(0,0,48,48);
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    updateUI("ENCODING MASTER GIF...", 80);
+                    updateUI("GENERANDO GIF...", 85);
                     const gif = new GIF({
                         workers: 2,
-                        quality: 4,
+                        quality: 1,
                         width: 48,
                         height: 48,
                         workerScript: workerBlobUrl,
-                        transparent: 'rgba(0,0,0,0)',
-                        repeat: 0
+                        transparent: 'rgba(0,0,0,0)'
                     });
                     gif.addFrame(c, { delay: 100 });
-                    gif.on('finished', blob => upload(blob));
+                    gif.on('finished', blob => handleResult(blob));
                     gif.render();
                 };
                 img.src = e.target.result;
@@ -151,7 +158,7 @@
             const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
             
             let x1=Infinity, y1=Infinity, x2=-Infinity, y2=-Infinity;
-            const rawCanvases = frames.map(f => {
+            const canvases = frames.map(f => {
                 const c = f.getImage();
                 const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
                 for(let i=3; i<d.length; i+=4) {
@@ -164,12 +171,12 @@
                 return c;
             });
 
-            if(x1===Infinity){ x1=0; y1=0; x2=rawCanvases[0].width; y2=rawCanvases[0].height; }
+            if(x1===Infinity){ x1=0; y1=0; x2=canvases[0].width; y2=canvases[0].height; }
             const w=x2-x1+1, h=y2-y1+1;
 
-            updateUI("LIMPIANDO ESTELAS...", 60);
+            updateUI("CORRIGIENDO CAPAS...", 65);
 
-            const processed = rawCanvases.map(c => {
+            const processed = canvases.map(c => {
                 const out = document.createElement('canvas');
                 out.width = 48; out.height = 48;
                 const ctx = out.getContext('2d');
@@ -182,63 +189,81 @@
                 return out;
             });
 
-            updateUI("ENCODING MASTER GIF...", 80);
+            updateUI("GENERANDO GIF...", 85);
 
             const gif = new GIF({
-                workers: 2,
-                quality: 4,
-                width: 48,
-                height: 48,
+                workers: 2, quality: 1, width: 48, height: 48,
                 workerScript: workerBlobUrl,
                 transparent: 'rgba(0,0,0,0)',
                 repeat: 0
             });
 
             processed.forEach(canvas => {
-                gif.addFrame(canvas, {
-                    delay: 45, 
-                    copy: true, 
-                    disposal: 2
-                });
+                gif.addFrame(canvas, { delay: 45, copy: true, disposal: 2 });
             });
 
-            gif.on('finished', blob => upload(blob));
+            gif.on('finished', blob => handleResult(blob));
             gif.render();
 
         } catch (e) { updateUI("ERROR PROCESO", 0); }
     }
 
-    async function upload(blob) {
-        updateUI("SUBIENDO A CATBOX...", 95);
+    function handleResult(blob) {
+        finalBlob = blob;
+        const blobUrl = URL.createObjectURL(blob);
         
+        // Configurar botón de descarga local
+        const dlBtn = document.getElementById('dl-btn');
+        dlBtn.onclick = () => {
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = 'sticker_48x48.gif';
+            a.click();
+        };
+
+        // Mostrar vista previa local al instante
+        updateUI("SISTEMA OK", 100);
+        document.getElementById('monitor').style.display = "none";
+        document.getElementById('result').style.display = "block";
+        document.getElementById('final-img').src = blobUrl;
+
+        // Subir a ImgBB en segundo plano
+        uploadImgBB(blob);
+    }
+
+    async function uploadImgBB(blob) {
+        const urlInput = document.getElementById('final-url');
+        const copyBtn = document.getElementById('btnCopy');
+        urlInput.value = "Subiendo a la nube...";
+
         const fd = new FormData();
-        fd.append('reqtype', 'fileupload');
-        fd.append('fileToUpload', blob, 'sticker.gif');
+        fd.append('image', blob);
 
         try {
-            const res = await fetch('https://catbox.moe/user/api.php', {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
                 method: 'POST',
                 body: fd
             });
-            const url = await res.text();
+            const data = await res.json();
 
-            if(url.includes('http')) {
-                updateUI("SISTEMA OK", 100);
-                document.getElementById('monitor').style.display = "none";
-                document.getElementById('result').style.display = "block";
-                document.getElementById('final-img').src = url;
-                document.getElementById('final-url').value = url;
+            if(data.success) {
+                urlInput.value = data.data.url;
             } else {
-                throw new Error();
+                throw new Error(data.error.message);
             }
-        } catch (e) { updateUI("ERROR SUBIDA", 0); }
+        } catch (e) {
+            urlInput.value = "Error al subir (Usa descarga directa)";
+        }
     }
 
     function copyLink() {
         const i = document.getElementById('final-url');
+        if(!i.value.startsWith('http')) return;
         i.select();
         document.execCommand('copy');
-        alert("Enlace permanente copiado.");
+        const btn = document.getElementById('btnCopy');
+        btn.textContent = "¡COPIADO!";
+        setTimeout(() => btn.textContent = "COPIAR LINK DIRECTO", 2000);
     }
 </script>
 </body>
