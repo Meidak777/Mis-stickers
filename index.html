@@ -3,275 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Lab 48x48 | Pro</title>
+    <title>Sticker Lab Ultra | Pro Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
         :root {
-            --d-blurple: #5865F2;
-            --d-green: #23a559;
-            --d-dark: #1e1f22;
-            --d-darker: #111214;
-            --d-card: #2b2d31;
-            --d-text: #dbdee1;
-            --d-subtext: #949ba4;
+            --primary: #5865F2;
+            --primary-glow: rgba(88, 101, 242, 0.5);
+            --accent: #eb459e;
+            --success: #23a559;
+            --bg-dark: #0f1012;
+            --glass: rgba(30, 31, 34, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
         body {
-            font-family: 'gg sans', 'Segoe UI', Tahoma, sans-serif;
-            background-color: var(--d-darker);
-            color: var(--d-text);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .app-container {
-            background: var(--d-card);
+        .orb {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--primary-glow);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .container {
             width: 100%;
-            max-width: 440px;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            max-width: 480px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
             box-sizing: border-box;
         }
 
-        h1 { font-size: 24px; margin-bottom: 8px; color: #fff; }
-        p { color: var(--d-subtext); font-size: 14px; margin-bottom: 24px; }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-weight: 800; font-size: 28px; margin: 0; background: linear-gradient(to right, #fff, #949ba4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: #949ba4; font-size: 14px; margin-top: 8px; }
 
         .drop-zone {
-            border: 2px dashed #4e5058;
-            border-radius: 12px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
             padding: 40px 20px;
-            transition: 0.3s;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
             cursor: pointer;
-            background: rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .drop-zone:hover, .drop-zone.drag-over {
-            border-color: var(--d-blurple);
+        .drop-zone:hover {
+            border-color: var(--primary);
             background: rgba(88, 101, 242, 0.05);
+            transform: translateY(-2px);
         }
 
-        .btn-primary {
-            background: var(--d-blurple);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            font-size: 15px;
-            transition: 0.2s;
-            box-sizing: border-box;
-        }
+        .drop-zone svg { width: 48px; height: 48px; fill: var(--primary); margin-bottom: 12px; }
 
-        .btn-primary:hover { background: #4752c4; }
-
+        .input-group { margin-top: 20px; position: relative; }
         input[type="text"] {
             width: 100%;
-            background: var(--d-darker);
-            border: 1px solid #1e1f22;
-            padding: 12px;
-            border-radius: 4px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
             color: #fff;
-            margin: 16px 0;
+            font-size: 14px;
+            outline: none;
             box-sizing: border-box;
         }
 
-        .status-container {
-            margin-top: 20px;
-            display: none;
-        }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
 
-        .progress-bar {
-            background: var(--d-darker);
-            height: 8px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        #progress-fill {
-            background: var(--d-blurple);
-            height: 100%;
-            width: 0%;
-            transition: 0.3s;
-        }
-
-        .preview-group {
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 12px;
+            box-sizing: border-box;
         }
 
-        .preview-box {
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIElEQVQYV2Nk+M/AwMDEwMDIEMDAyMAAF0AzAIEAF0AzAIEAMh0EAC3fByoAAAAASUVORK5CYII=');
-            border-radius: 8px;
-            padding: 10px;
-            border: 2px solid #1e1f22;
-        }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        #preview-img { width: 48px; height: 48px; display: block; image-rendering: pixelated; }
-
-        .result-area {
+        .status-box {
             display: none;
-            margin-top: 24px;
-            animation: slideUp 0.4s ease;
+            margin-top: 25px;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 16px;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .copy-group { display: flex; gap: 8px; margin-top: 10px; }
-        
-        .btn-success {
-            background: var(--d-green);
-            flex-grow: 1;
-            color: white; border: none; padding: 12px; border-radius: 4px; font-weight: 600; cursor: pointer;
+        .loader {
+            height: 6px;
+            width: 100%;
+            background: #2b2d31;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
         }
 
-        .tag {
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sticker-preview {
+            width: 80px; height: 80px;
+            background: #000;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticker-preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
+
+        .btn-success { background: var(--success); color: #fff; width: 100%; }
+
+        .footer-tag {
+            text-align: center;
             font-size: 10px;
+            letter-spacing: 2px;
+            color: #949ba4;
+            margin-top: 30px;
+            opacity: 0.5;
             text-transform: uppercase;
-            background: var(--d-blurple);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="tag">Pro Edition</div>
-    <h1>Sticker Maker</h1>
-    <p>Convierte cualquier imagen o GIF en un sticker perfecto de 48x48 para Discord.</p>
+<div class="orb"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>Sticker Lab <span style="color:var(--primary)">Ultra</span></h1>
+        <p>Procesa, optimiza y crea stickers de 48x48</p>
+    </div>
 
     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <span id="dropText">Suelta tu imagen o GIF aquí</span>
+        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+        <div style="font-weight: 600;">Suelte su imagen aquí</div>
+        <div style="font-size: 12px; color: #949ba4; margin-top: 5px;">Soporta GIF, PNG, WEBP</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" placeholder="O pega un enlace directo aquí...">
-    <button class="btn-primary" onclick="handleUrl()">Procesar desde Enlace</button>
-
-    <div class="status-container" id="statusContainer">
-        <div id="statusLabel" style="font-size: 13px; margin-bottom: 8px;">Iniciando...</div>
-        <div class="progress-bar"><div id="progress-fill"></div></div>
+    <div class="input-group">
+        <input type="text" id="urlInput" placeholder="https://ejemplo.com/imagen.png">
+        <button class="btn btn-primary" onclick="handleUrl()">PROCESAR DESDE LINK</button>
     </div>
 
-    <div class="result-area" id="resultArea">
-        <div class="preview-group">
-            <div class="preview-box">
-                <img id="preview-img" src="" alt="Preview">
-            </div>
-            <div style="text-align: left;">
-                <div style="font-weight: bold; font-size: 14px;">Vista previa</div>
-                <div style="font-size: 12px; color: var(--d-subtext);">48x48 píxeles</div>
-            </div>
-        </div>
-        
-        <input type="text" id="finalUrl" readonly>
-        
-        <div class="copy-group">
-            <button class="btn-success" id="btnCopy" onclick="copyToClipboard()">COPIAR LINK</button>
-            <button class="btn-primary" style="width: auto;" onclick="location.reload()">🔄</button>
-        </div>
+    <div class="status-box" id="statusBox">
+        <div id="statusText" style="font-size: 13px; font-weight: 600;">Iniciando motor...</div>
+        <div class="loader"><div class="loader-bar" id="progressBar"></div></div>
     </div>
+
+    <div class="result-card" id="resultCard">
+        <div class="preview-wrapper">
+            <div class="sticker-preview">
+                <img id="finalImg" src="" alt="">
+            </div>
+        </div>
+        <input type="text" id="resultUrl" readonly style="margin-bottom: 15px; text-align: center; border-style: dashed;">
+        <button class="btn btn-success" id="copyBtn" onclick="copyResult()">COPIAR ENLACE GIF</button>
+        <button class="btn" style="background: transparent; color: #949ba4; font-size: 12px;" onclick="location.reload()">PROCESAR OTRO</button>
+    </div>
+
+    <div class="footer-tag">AI Powered Processing • v3.0 Ultra</div>
 </div>
 
 <script>
     const fileInput = document.getElementById('fileInput');
-    const dropZone = document.getElementById('dropZone');
-    const statusContainer = document.getElementById('statusContainer');
-    const progressFill = document.getElementById('progress-fill');
-    const statusLabel = document.getElementById('statusLabel');
-    const resultArea = document.getElementById('result-area');
+    const statusBox = document.getElementById('statusBox');
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('statusText');
+    const resultCard = document.getElementById('resultCard');
 
-    fileInput.onchange = e => processFile(e.target.files[0]);
+    fileInput.onchange = e => startProcessing(e.target.files[0]);
 
-    dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('drag-over'); };
-    dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
-    dropZone.ondrop = e => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        processFile(e.dataTransfer.files[0]);
-    };
+    const dz = document.getElementById('dropZone');
+    dz.ondragover = e => { e.preventDefault(); dz.style.borderColor = "var(--primary)"; };
+    dz.ondragleave = () => { dz.style.borderColor = "var(--border)"; };
+    dz.ondrop = e => { e.preventDefault(); startProcessing(e.dataTransfer.files[0]); };
 
     async function handleUrl() {
         const url = document.getElementById('urlInput').value.trim();
         if (!url) return;
-        updateStatus("Descargando imagen...", 10);
+        updateUI("Descargando...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
             const blob = await res.blob();
-            processFile(blob);
-        } catch (err) {
-            updateStatus("Error al bajar la URL. Prueba subiendo el archivo.", 0, true);
-        }
+            startProcessing(blob);
+        } catch (e) { updateUI("Error de descarga", 0, true); }
     }
 
-    function updateStatus(text, percent, isError = false) {
-        statusContainer.style.display = 'block';
-        statusLabel.textContent = text;
-        statusLabel.style.color = isError ? '#f23f43' : '#dbdee1';
-        progressFill.style.width = percent + '%';
+    function updateUI(msg, percent, error = false) {
+        statusBox.style.display = "block";
+        statusText.textContent = msg;
+        statusText.style.color = error ? "#ff4747" : "#fff";
+        progressBar.style.width = percent + "%";
+        if(error) progressBar.style.background = "#ff4747";
     }
 
-    async function processFile(file) {
+    async function startProcessing(file) {
         if (!file) return;
-        resultArea.style.display = 'none';
+        resultCard.style.display = "none";
 
-        // Si es una imagen estática (PNG, JPG, WebP no GIF)
+        // Si es una imagen estática (PNG, JPG, WebP)
         if (file.type !== 'image/gif') {
-            updateStatus("Procesando imagen estática...", 40);
+            updateUI("Procesando imagen estática...", 40);
             const reader = new FileReader();
             reader.onload = e => {
                 const img = new Image();
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 48; canvas.height = 48;
-                    const ctx = canvas.getContext('2d');
+                    const c = document.createElement('canvas');
+                    c.width = 48; c.height = 48;
+                    const ctx = c.getContext('2d');
                     
-                    // Recorte Bounding Box básico
                     const tempC = document.createElement('canvas');
                     tempC.width = img.width; tempC.height = img.height;
                     const tempCtx = tempC.getContext('2d');
                     tempCtx.drawImage(img, 0, 0);
-                    const imgData = tempCtx.getImageData(0,0,img.width,img.height);
+                    const data = tempCtx.getImageData(0,0,img.width,img.height).data;
+                    
                     let minX = img.width, minY = img.height, maxX = 0, maxY = 0;
-                    for (let i = 3; i < imgData.data.length; i += 4) {
-                        if (imgData.data[i] > 10) {
-                            const x = (i/4) % img.width;
-                            const y = Math.floor((i/4) / img.width);
+                    for(let i=3; i<data.length; i+=4) {
+                        if(data[i] > 10) {
+                            const x = (i/4) % img.width; const y = Math.floor((i/4) / img.width);
                             minX = Math.min(minX, x); maxX = Math.max(maxX, x);
                             minY = Math.min(minY, y); maxY = Math.max(maxY, y);
                         }
                     }
-                    if (minX > maxX) { minX = 0; minY = 0; maxX = img.width; maxY = img.height; }
+                    if(minX > maxX) { minX=0; minY=0; maxX=img.width; maxY=img.height; }
                     const w = maxX - minX + 1, h = maxY - minY + 1;
 
-                    const ratio = Math.min(48 / w, 48 / h);
-                    const nw = w * ratio, nh = h * ratio;
-                    const nx = (48 - nw) / 2, ny = (48 - nh) / 2;
-
+                    const s = Math.min(48/w, 48/h);
+                    const nw = w*s, nh = h*s;
                     ctx.clearRect(0,0,48,48);
-                    ctx.drawImage(img, minX, minY, w, h, nx, ny, nw, nh);
+                    ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    // Convertir a GIF de 1 frame usando gif.js
-                    const gif = new GIF({
-                        workers: 2, quality: 2, width: 48, height: 48,
-                        workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js'
-                    });
-                    gif.addFrame(canvas, { delay: 100 });
-                    gif.on('finished', blob => uploadToLitterbox(blob));
+                    updateUI("Empaquetando GIF...", 80);
+                    const gif = new GIF({ workers: 2, quality: 5, width: 48, height: 48, workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js', transparent: 'rgba(0,0,0,0)' });
+                    gif.addFrame(c, { delay: 100 });
+                    gif.on('finished', blob => uploadFile(blob));
                     gif.render();
                 };
                 img.src = e.target.result;
@@ -281,125 +322,82 @@
         }
 
         // Si es un GIF Animado
+        updateUI("Extrayendo Frames...", 30);
         try {
-            updateStatus("Extrayendo frames del GIF...", 20);
-            const frames = await gifFrames({ 
-                url: URL.createObjectURL(file), 
-                frames: 'all', 
-                outputType: 'canvas', 
-                cumulative: true 
-            });
-
-            updateStatus("Calculando Bounding Box global...", 40);
-            let gMinX = Infinity, gMinY = Infinity, gMaxX = -Infinity, gMaxY = -Infinity;
-
-            const analyzedFrames = frames.map(f => {
-                const canvas = f.getImage();
-                const ctx = canvas.getContext('2d');
-                const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
-                const data = imgData.data;
-
-                for (let i = 3; i < data.length; i += 4) {
-                    if (data[i] > 10) {
-                        const x = (i/4) % canvas.width;
-                        const y = Math.floor((i/4) / canvas.width);
-                        gMinX = Math.min(gMinX, x); gMaxX = Math.max(gMaxX, x);
-                        gMinY = Math.min(gMinY, y); gMaxY = Math.max(gMaxY, y);
+            const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
+            
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            const canvases = frames.map(f => {
+                const c = f.getImage();
+                const ctx = c.getContext('2d');
+                const data = ctx.getImageData(0,0,c.width,c.height).data;
+                for(let i=3; i<data.length; i+=4) {
+                    if(data[i] > 20) {
+                        const x = (i/4) % c.width; const y = Math.floor((i/4) / c.width);
+                        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+                        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
                     }
                 }
-                return canvas;
+                return c;
             });
 
-            if (gMinX === Infinity) { gMinX = 0; gMinY = 0; gMaxX = analyzedFrames[0].width; gMaxY = analyzedFrames[0].height; }
+            if(minX === Infinity) { minX=0; minY=0; maxX=canvases[0].width; maxY=canvases[0].height; }
+            const w = (maxX - minX) + 1; const h = (maxY - minY) + 1;
 
-            const cropW = (gMaxX - gMinX) + 1;
-            const cropH = (gMaxY - gMinY) + 1;
+            updateUI("Renderizando 48x48...", 60);
 
-            updateStatus("Renderizando frames a 48x48...", 60);
-
-            const processedCanvases = analyzedFrames.map(canvas => {
+            const processed = canvases.map(c => {
                 const out = document.createElement('canvas');
                 out.width = 48; out.height = 48;
                 const ctx = out.getContext('2d');
-
-                const ratio = Math.min(48 / cropW, 48 / cropH);
-                const nw = cropW * ratio;
-                const nh = cropH * ratio;
-                const nx = (48 - nw) / 2;
-                const ny = (48 - nh) / 2;
-
-                ctx.clearRect(0,0,48,48);
-                ctx.drawImage(canvas, gMinX, gMinY, cropW, cropH, nx, ny, nw, nh);
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                const s = Math.min(48/w, 48/h);
+                const nw = w*s, nh = h*s;
+                ctx.drawImage(c, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
                 return out;
             });
 
-            updateStatus("Codificando GIF...", 80);
+            updateUI("Empaquetando GIF...", 80);
+            const gif = new GIF({ workers: 4, quality: 5, width: 48, height: 48, workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js', transparent: 'rgba(0,0,0,0)' });
+            processed.forEach(c => gif.addFrame(c, {delay: 45, copy: true, disposal: 2}));
             
-            const gif = new GIF({
-                workers: 2,
-                quality: 10,
-                width: 48,
-                height: 48,
-                workerScript: 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js'
-            });
-
-            processedCanvases.forEach(c => {
-                gif.addFrame(c, { delay: 40, copy: true });
-            });
-
-            gif.on('finished', blob => {
-                uploadToLitterbox(blob);
-            });
-
+            gif.on('finished', blob => uploadFile(blob));
             gif.render();
 
-        } catch (err) {
-            console.error(err);
-            updateStatus("Error procesando GIF animado.", 0, true);
-        }
+        } catch (e) { updateUI("Error de proceso", 0, true); }
     }
 
-    async function uploadToLitterbox(blob) {
-        updateStatus("Subiendo a Litterbox...", 90);
-        
-        const formData = new FormData();
-        formData.append('reqtype', 'fileupload');
-        formData.append('time', '72h');
-        formData.append('fileToUpload', blob, 'sticker.gif');
+    async function uploadFile(blob) {
+        updateUI("Subiendo a la nube...", 95);
+        const fd = new FormData();
+        fd.append('reqtype', 'fileupload');
+        fd.append('time', '72h');
+        fd.append('fileToUpload', blob, 'sticker.gif');
 
         try {
-            const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
-                method: 'POST',
-                body: formData
-            });
+            const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method: 'POST', body: fd });
             const url = await res.text();
-
-            if (url.startsWith('http')) {
-                updateStatus("¡Completado!", 100);
-                document.getElementById('preview-img').src = url;
-                document.getElementById('finalUrl').value = url;
-                resultArea.style.display = 'block';
-                statusContainer.style.display = 'none';
-            } else {
-                throw new Error("Respuesta inválida");
+            if(url.includes('http')) {
+                updateUI("¡Éxito!", 100);
+                setTimeout(() => {
+                    statusBox.style.display = "none";
+                    resultCard.style.display = "block";
+                    document.getElementById('finalImg').src = url;
+                    document.getElementById('resultUrl').value = url;
+                }, 500);
             }
-        } catch (err) {
-            updateStatus("Error de subida. Intenta de nuevo.", 0, true);
-        }
+        } catch (e) { updateUI("Error de subida", 0, true); }
     }
 
-    function copyToClipboard() {
-        const input = document.getElementById('finalUrl');
+    function copyResult() {
+        const input = document.getElementById('resultUrl');
         input.select();
         document.execCommand('copy');
-        
-        const btn = document.getElementById('btnCopy');
+        const btn = document.getElementById('copyBtn');
         btn.textContent = "¡COPIADO!";
-        btn.style.background = "#3ca374";
-        setTimeout(() => {
-            btn.textContent = "COPIAR LINK";
-            btn.style.background = "var(--d-green)";
-        }, 2000);
+        btn.style.background = "#43b581";
+        setTimeout(() => { btn.textContent = "COPIAR ENLACE GIF"; btn.style.background = "var(--success)"; }, 2000);
     }
 </script>
 </body>
