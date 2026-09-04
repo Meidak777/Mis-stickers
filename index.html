@@ -93,9 +93,9 @@
 <body>
 
 <div class="main-card">
-    <div class="status-tag">STK-48 ULTRA v5.0</div>
+    <div class="status-tag">STK-48 ULTRA v5.1</div>
     <h1>STK-48 ULTRA</h1>
-    <div class="desc">Procesamiento permanente 48x48 para Discord.</div>
+    <div class="desc">Procesamiento limpio sin rastros 48x48.</div>
 
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
         <div style="font-size: 24px;">🚀</div>
@@ -121,7 +121,6 @@
 
 <script>
     const IMGBB_API_KEY = '5e0002c33f0bc8cfb533401d4e95999a'; 
-
     let workerUrl = null;
 
     async function initWorker() {
@@ -135,7 +134,7 @@
     document.getElementById('fileInput').onchange = e => process(e.target.files[0]);
 
     async function fromUrl() {
-        const url = document.getElementById('urlInput').value.trim();
+        const url = document.getElementById('urlInput'].value.trim();
         if(!url) return;
         updateUI("DOWNLOADING...", 20);
         try {
@@ -154,7 +153,54 @@
     async function process(file) {
         if(!file) return;
         document.getElementById('result-view').style.display = "none";
-        updateUI("ANALYZING...", 40);
+
+        // Si es imagen estática
+        if (file.type !== 'image/gif') {
+            updateUI("PROCESSING STATIC...", 40);
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = 48; c.height = 48;
+                    const ctx = c.getContext('2d');
+                    
+                    const tempC = document.createElement('canvas');
+                    tempC.width = img.width; tempC.height = img.height;
+                    const tempCtx = tempC.getContext('2d');
+                    tempCtx.drawImage(img, 0, 0);
+                    const data = tempCtx.getImageData(0,0,img.width,img.height).data;
+                    
+                    let minX = img.width, minY = img.height, maxX = 0, maxY = 0;
+                    for(let i=3; i<data.length; i+=4) {
+                        if(data[i] > 10) {
+                            const x = (i/4) % img.width; const y = Math.floor((i/4) / img.width);
+                            minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+                            minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+                        }
+                    }
+                    if(minX > maxX) { minX=0; minY=0; maxX=img.width; maxY=img.height; }
+                    const w = maxX - minX + 1, h = maxY - minY + 1;
+
+                    const s = Math.min(48/w, 48/h);
+                    const nw = w*s, nh = h*s;
+                    ctx.clearRect(0,0,48,48);
+                    ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
+
+                    updateUI("ENCODING...", 70);
+                    const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
+                    gif.addFrame(c, { delay: 100 });
+                    gif.on('finished', b => uploadImgBB(b));
+                    gif.render();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+
+        // Si es GIF Animado
+        updateUI("ANALYZING FRAMES...", 40);
 
         try {
             const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
@@ -176,11 +222,16 @@
             if(x1===Infinity){ x1=0; y1=0; x2=sources[0].width; y2=sources[0].height; }
             const w=x2-x1+1, h=y2-y1+1;
 
+            updateUI("CLEARING DISPOSAL LAYERS...", 60);
+
             const processed = sources.map(s => {
                 const o = document.createElement('canvas');
                 o.width=48; o.height=48;
                 const ctx = o.getContext('2d');
+                
+                // Limpieza total del canvas por frame para evitar rastros fantasma
                 ctx.clearRect(0,0,48,48);
+                
                 const sc = Math.min(48/w, 48/h);
                 const nw=w*sc, nh=h*sc;
                 ctx.imageSmoothingEnabled=true;
@@ -189,9 +240,14 @@
                 return o;
             });
 
-            updateUI("ENCODING...", 70);
+            updateUI("ENCODING CLEAN GIF...", 80);
             const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
-            processed.forEach(c => gif.addFrame(c, {delay:45, copy:true, disposal:2}));
+            
+            processed.forEach(c => gif.addFrame(c, {
+                delay: 45, 
+                copy: true, 
+                disposal: 2 // LIMPIEZA ABSOLUTA DE FRAME ANTERIOR
+            }));
             
             gif.on('finished', b => uploadImgBB(b));
             gif.render();
