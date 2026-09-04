@@ -3,126 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STK-48 MASTER | Time-Sync</title>
+    <title>STK-48 MASTER | Clean Animation</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap');
-
-        :root {
-            --accent: #5865F2;
-            --bg: #0d0e10;
-            --panel: #16171a;
-            --border: #2d2f35;
-            --text: #ffffff;
-            --success: #23a559;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .main-card {
-            width: 100%; max-width: 420px;
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 16px; padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .status-tag {
-            position: absolute; top: -10px; left: 20px;
-            background: var(--accent); color: white;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px; padding: 2px 8px; border-radius: 4px;
-        }
-
+        :root { --accent: #5865F2; --bg: #0d0e10; --panel: #16171a; --border: #2d2f35; --text: #ffffff; --success: #23a559; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .main-card { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; box-sizing: border-box; }
+        .status-tag { position: absolute; top: -10px; left: 20px; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 4px; }
         h1 { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; }
         .desc { color: #8e9297; font-size: 12px; margin-bottom: 25px; }
-
-        .upload-area {
-            border: 2px dashed var(--border); border-radius: 12px;
-            padding: 40px 20px; text-align: center;
-            background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-
+        .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px; box-sizing: border-box; }
         .upload-area:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
-
-        .input-text {
-            width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 12px; border-radius: 8px; color: var(--accent);
-            font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 10px;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            width: 100%; padding: 14px; border-radius: 8px; border: none;
-            font-weight: 900; cursor: pointer; text-transform: uppercase;
-            font-size: 11px; margin-bottom: 8px; transition: 0.2s;
-            box-sizing: border-box;
-        }
-
+        .input-text { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 10px; outline: none; box-sizing: border-box; }
+        .btn { width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 11px; margin-bottom: 8px; transition: 0.2s; box-sizing: border-box; }
         .btn-primary { background: var(--accent); color: #fff; }
         .btn-success { background: var(--success); color: white; }
         .btn-download { background: #4f545c; color: white; }
-
-        #monitor {
-            display: none; margin-top: 15px; padding: 12px;
-            background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
-        }
-
+        #monitor { display: none; margin-top: 15px; padding: 12px; background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
         .bar-bg { height: 4px; background: #1a1a1a; margin-top: 8px; border-radius: 10px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
-
         #result-view { display: none; margin-top: 25px; text-align: center; }
-        .preview-circle {
-            width: 64px; height: 64px; background: #000; border: 1px solid var(--border);
-            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
-            border-radius: 8px;
-        }
+        .preview-circle { width: 64px; height: 64px; background: #000; border: 1px solid var(--border); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
         .preview-circle img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
     </style>
 </head>
 <body>
 
 <div class="main-card">
-    <div class="status-tag">STK-48 ENGINE v7.0</div>
+    <div class="status-tag">STK-48 CORE v8.0</div>
     <h1>STK-48 MASTER</h1>
-    <div class="desc">Sincronización de tiempos originales activada.</div>
+    <div class="desc">Animación limpia: Reset de cuadros activo.</div>
 
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 24px;">🔄</div>
-        <div style="font-weight: bold; margin-top: 8px; font-size: 13px;">SUBIR ARCHIVO ORIGEN</div>
+        <div style="font-size: 24px;">✨</div>
+        <div style="font-weight: bold; margin-top: 8px; font-size: 13px;">SUBIR GIF / IMAGEN</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" class="input-text" placeholder="URL_SOURCE_INPUT...">
-    <button class="btn btn-primary" onclick="fromUrl()">INICIAR PROCESO</button>
+    <input type="text" id="urlInput" class="input-text" placeholder="PEGAR URL SOURCE...">
+    <button class="btn btn-primary" onclick="fromUrl()">EJECUTAR LIMPIEZA</button>
 
     <div id="monitor">
-        <div id="status-label">ESPERANDO...</div>
+        <div id="status-label">IDLE...</div>
         <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
     </div>
 
     <div id="result-view">
         <div class="preview-circle"><img id="preview-img" src="" alt=""></div>
         
-        <button class="btn btn-download" id="dlBtn">💾 DESCARGAR GIF (PC/MÓVIL)</button>
+        <button class="btn btn-download" id="dlBtn">💾 GUARDAR ARCHIVO GIF</button>
         <div style="margin: 15px 0; border-bottom: 1px solid #333;"></div>
         
-        <input type="text" id="final-url" class="input-text" readonly style="text-align: center;" placeholder="Subiendo para link de Discord...">
-        <button class="btn btn-success" onclick="copyUrl()">COPIAR LINK DIRECTO</button>
+        <input type="text" id="final-url" class="input-text" readonly style="text-align: center;" placeholder="Generando link...">
+        <button class="btn btn-success" id="copyBtn" onclick="copyUrl()">COPIAR LINK DISCORD</button>
         
-        <button class="btn" style="background:transparent; color:#555; margin-top:10px; font-size: 10px;" onclick="location.reload()">NUEVA TAREA</button>
+        <button class="btn" style="background:transparent; color:#555; margin-top:10px; font-size: 10px;" onclick="location.reload()">REINICIAR</button>
     </div>
 </div>
 
@@ -135,7 +72,7 @@
         try {
             const r = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
             workerUrl = URL.createObjectURL(await r.blob());
-        } catch(e) { console.error("Worker load failed"); }
+        } catch(e) { console.error("Worker failed"); }
     }
     init();
 
@@ -144,7 +81,7 @@
     async function fromUrl() {
         const url = document.getElementById('urlInput').value.trim();
         if(!url) return;
-        updateUI("BAJANDO...", 20);
+        updateUI("OBTENIENDO...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
             const blob = await res.blob();
@@ -154,7 +91,7 @@
 
     function updateUI(msg, pct) {
         document.getElementById('monitor').style.display = "block";
-        document.getElementById('status-label').textContent = "ESTADO: " + msg;
+        document.getElementById('status-label').textContent = msg;
         document.getElementById('bar').style.width = pct + "%";
     }
 
@@ -196,7 +133,7 @@
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
                     updateUI("ENCODING...", 80);
-                    const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
+                    const gif = new GIF({ workers:2, quality:1, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
                     gif.addFrame(c, { delay: 100 });
                     gif.on('finished', b => showResult(b));
                     gif.render();
@@ -207,8 +144,7 @@
             return;
         }
 
-        // Si es GIF Animado
-        updateUI("EXTRAYENDO METADATOS Y TIEMPOS...", 35);
+        updateUI("RESET DE CAPAS...", 40);
 
         try {
             const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
@@ -230,23 +166,33 @@
             if(x1===Infinity){ x1=0; y1=0; x2=analyzedData[0].canvas.width; y2=analyzedData[0].canvas.height; }
             const w=x2-x1+1, h=y2-y1+1;
 
-            updateUI("LIMPIANDO CAPAS...", 60);
+            updateUI("NORMALIZANDO 48PX...", 70);
 
             const processedFrames = analyzedData.map(item => {
                 const out = document.createElement('canvas');
                 out.width=48; out.height=48;
                 const ctx = out.getContext('2d');
+                
                 ctx.clearRect(0,0,48,48);
+                ctx.globalCompositeOperation = 'copy';
+                
                 const sc = Math.min(48/w, 48/h);
                 const nw=w*sc, nh=h*sc;
-                ctx.imageSmoothingEnabled=true;
-                ctx.imageSmoothingQuality='high';
+                
                 ctx.drawImage(item.canvas, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
                 return { canvas: out, delay: item.delay };
             });
 
-            updateUI("ENCODING (PRECISION_TIME)...", 80);
-            const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)', repeat: 0 });
+            updateUI("ENCODING (DISPOSAL_LOCK)...", 90);
+            const gif = new GIF({ 
+                workers:2, 
+                quality:1, 
+                width:48, 
+                height:48, 
+                workerScript: workerUrl, 
+                transparent: 'rgba(0,0,0,0)', 
+                repeat: 0 
+            });
             
             processedFrames.forEach(f => {
                 gif.addFrame(f.canvas, { delay: f.delay, copy: true, disposal: 2 });
@@ -254,11 +200,11 @@
             
             gif.on('finished', b => showResult(b));
             gif.render();
-        } catch(e) { updateUI("ERROR PROCESO", 0); console.error(e);}
+        } catch(e) { updateUI("ERROR PROCESO", 0); }
     }
 
     function showResult(blob) {
-        updateUI("LISTO", 100);
+        updateUI("SISTEMA OK", 100);
         setTimeout(() => {
             document.getElementById('monitor').style.display = "none";
             document.getElementById('result-view').style.display = "block";
@@ -268,7 +214,7 @@
             document.getElementById('dlBtn').onclick = () => {
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `sticker_sync_${Date.now()}.gif`;
+                a.download = `sticker_pro_${Date.now()}.gif`;
                 a.click();
             };
 
@@ -285,7 +231,7 @@
             if(data.success) {
                 document.getElementById('final-url').value = data.data.url;
             }
-        } catch (e) { document.getElementById('final-url').value = "Error al obtener link."; }
+        } catch (e) { document.getElementById('final-url').value = "Link no disponible."; }
     }
 
     function copyUrl() {
@@ -293,7 +239,7 @@
         if(!i.value.includes('http')) return;
         i.select();
         document.execCommand('copy');
-        alert("Link copiado.");
+        alert("Enlace copiado.");
     }
 </script>
 </body>
