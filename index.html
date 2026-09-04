@@ -3,80 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STK-48 MASTER | Core Edition</title>
+    <title>STK-48 MASTER | Time-Sync</title>
     <script src="https://cdn.jsdelivr.net/npm/gif-frames@1.0.1/dist/gif-frames.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap');
-        :root { --accent: #5865F2; --bg: #0d0e10; --panel: #16171a; --border: #2d2f35; --text: #ffffff; --success: #23a559; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .terminal { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; box-sizing: border-box; }
-        .tag { position: absolute; top: -10px; left: 20px; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 10px; border-radius: 4px; font-weight: bold; }
-        h1 { font-size: 24px; font-weight: 900; margin: 0 0 10px; letter-spacing: -1px; }
-        .sub { color: #8e9297; font-size: 13px; margin-bottom: 25px; }
-        .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; background: rgba(0,0,0,0.2); margin-bottom: 20px; box-sizing: border-box; }
-        .input-box { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 11px; background: var(--accent); color: white; margin-bottom: 10px; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
-        #monitor { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-        .bar-bg { height: 4px; background: #222; margin-top: 10px; border-radius: 4px; overflow: hidden; }
+
+        :root {
+            --accent: #5865F2;
+            --bg: #0d0e10;
+            --panel: #16171a;
+            --border: #2d2f35;
+            --text: #ffffff;
+            --success: #23a559;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .main-card {
+            width: 100%; max-width: 420px;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 16px; padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .status-tag {
+            position: absolute; top: -10px; left: 20px;
+            background: var(--accent); color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px; padding: 2px 8px; border-radius: 4px;
+        }
+
+        h1 { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .desc { color: #8e9297; font-size: 12px; margin-bottom: 25px; }
+
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: 12px;
+            padding: 40px 20px; text-align: center;
+            background: rgba(0,0,0,0.2); cursor: pointer; margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .upload-area:hover { border-color: var(--accent); background: rgba(88,101,242,0.05); }
+
+        .input-text {
+            width: 100%; background: #000; border: 1px solid var(--border);
+            padding: 12px; border-radius: 8px; color: var(--accent);
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 10px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%; padding: 14px; border-radius: 8px; border: none;
+            font-weight: 900; cursor: pointer; text-transform: uppercase;
+            font-size: 11px; margin-bottom: 8px; transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-download { background: #4f545c; color: white; }
+
+        #monitor {
+            display: none; margin-top: 15px; padding: 12px;
+            background: #000; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+        }
+
+        .bar-bg { height: 4px; background: #1a1a1a; margin-top: 8px; border-radius: 10px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.3s; }
-        #result { display: none; margin-top: 25px; text-align: center; }
-        .preview { width: 64px; height: 64px; background: #000; border: 1px solid var(--border); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-        .preview img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
-        .btn-success { background: var(--success); }
-        .btn-download { background: #4f545c; }
+
+        #result-view { display: none; margin-top: 25px; text-align: center; }
+        .preview-circle {
+            width: 64px; height: 64px; background: #000; border: 1px solid var(--border);
+            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+        }
+        .preview-circle img { width: 48px; height: 48px; image-rendering: pixelated; object-fit: contain; }
     </style>
 </head>
 <body>
 
-<div class="terminal">
-    <div class="tag">STK-48 MASTER v6.5</div>
+<div class="main-card">
+    <div class="status-tag">STK-48 ENGINE v7.0</div>
     <h1>STK-48 MASTER</h1>
-    <div class="sub">Procesador de stickers con doble salida (Link/PC).</div>
+    <div class="desc">Sincronización de tiempos originales activada.</div>
 
-    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 28px;">📦</div>
-        <div style="font-weight: bold; margin-top: 10px;">SUBIR ARCHIVO</div>
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size: 24px;">🔄</div>
+        <div style="font-weight: bold; margin-top: 8px; font-size: 13px;">SUBIR ARCHIVO ORIGEN</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" class="input-box" placeholder="PEGAR LINK DE IMAGEN...">
-    <button class="btn" onclick="fromUrl()">INICIAR PROCESO</button>
+    <input type="text" id="urlInput" class="input-text" placeholder="URL_SOURCE_INPUT...">
+    <button class="btn btn-primary" onclick="fromUrl()">INICIAR PROCESO</button>
 
     <div id="monitor">
-        <div id="status">ESTADO: STANDBY</div>
+        <div id="status-label">ESPERANDO...</div>
         <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
     </div>
 
-    <div id="result">
-        <div class="preview"><img id="final-img" src="" alt=""></div>
+    <div id="result-view">
+        <div class="preview-circle"><img id="preview-img" src="" alt=""></div>
         
-        <button id="dl-btn" class="btn btn-download">💾 DESCARGAR ARCHIVO .GIF</button>
-        
+        <button class="btn btn-download" id="dlBtn">💾 DESCARGAR GIF (PC/MÓVIL)</button>
         <div style="margin: 15px 0; border-bottom: 1px solid #333;"></div>
         
-        <input type="text" id="final-url" class="input-box" readonly style="text-align: center; color: var(--accent);" placeholder="Subiendo para link...">
-        <button class="btn btn-success" id="btnCopy" onclick="copyLink()">COPIAR LINK DIRECTO</button>
+        <input type="text" id="final-url" class="input-text" readonly style="text-align: center;" placeholder="Subiendo para link de Discord...">
+        <button class="btn btn-success" onclick="copyUrl()">COPIAR LINK DIRECTO</button>
         
-        <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">PROCESAR OTRO</button>
+        <button class="btn" style="background:transparent; color:#555; margin-top:10px; font-size: 10px;" onclick="location.reload()">NUEVA TAREA</button>
     </div>
 </div>
 
 <script>
     const IMGBB_KEY = '5e0002c33f0bc8cfb533401d4e95999a'; 
 
-    let workerBlobUrl = null;
-    let finalBlob = null;
+    let workerUrl = null;
 
-    async function preload() {
+    async function init() {
         try {
             const r = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
-            workerBlobUrl = URL.createObjectURL(await r.blob());
-        } catch(e) { console.error("Error cargando el motor del GIF."); }
+            workerUrl = URL.createObjectURL(await r.blob());
+        } catch(e) { console.error("Worker load failed"); }
     }
-    preload();
+    init();
 
-    document.getElementById('fileInput').onchange = e => start(e.target.files[0]);
+    document.getElementById('fileInput').onchange = e => process(e.target.files[0]);
 
     async function fromUrl() {
         const url = document.getElementById('urlInput').value.trim();
@@ -85,21 +148,21 @@
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
             const blob = await res.blob();
-            start(blob);
+            process(blob);
         } catch(e) { updateUI("ERROR LINK", 0); }
     }
 
     function updateUI(msg, pct) {
         document.getElementById('monitor').style.display = "block";
-        document.getElementById('status').textContent = "ESTADO: " + msg;
+        document.getElementById('status-label').textContent = "ESTADO: " + msg;
         document.getElementById('bar').style.width = pct + "%";
     }
 
-    async function start(file) {
+    async function process(file) {
         if(!file) return;
-        document.getElementById('result').style.display = "none";
+        document.getElementById('result-view').style.display = "none";
 
-        // Si es imagen estática (PNG, JPG, WEBP)
+        // Si es una imagen estática (PNG, JPG, WEBP)
         if (file.type !== 'image/gif') {
             updateUI("PROCESANDO IMAGEN...", 40);
             const reader = new FileReader();
@@ -132,17 +195,10 @@
                     ctx.clearRect(0,0,48,48);
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    updateUI("GENERANDO GIF...", 85);
-                    const gif = new GIF({
-                        workers: 2,
-                        quality: 1,
-                        width: 48,
-                        height: 48,
-                        workerScript: workerBlobUrl,
-                        transparent: 'rgba(0,0,0,0)'
-                    });
+                    updateUI("ENCODING...", 80);
+                    const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)' });
                     gif.addFrame(c, { delay: 100 });
-                    gif.on('finished', blob => handleResult(blob));
+                    gif.on('finished', b => showResult(b));
                     gif.render();
                 };
                 img.src = e.target.result;
@@ -152,13 +208,13 @@
         }
 
         // Si es GIF Animado
-        updateUI("EXTRAYENDO FRAMES...", 40);
+        updateUI("EXTRAYENDO METADATOS Y TIEMPOS...", 35);
 
         try {
             const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
             
             let x1=Infinity, y1=Infinity, x2=-Infinity, y2=-Infinity;
-            const canvases = frames.map(f => {
+            const analyzedData = frames.map(f => {
                 const c = f.getImage();
                 const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
                 for(let i=3; i<d.length; i+=4) {
@@ -168,102 +224,76 @@
                         y1=Math.min(y1,y); y2=Math.max(y2,y);
                     }
                 }
-                return c;
+                return { canvas: c, delay: f.frameInfo.delay * 10 || 50 }; 
             });
 
-            if(x1===Infinity){ x1=0; y1=0; x2=canvases[0].width; y2=canvases[0].height; }
+            if(x1===Infinity){ x1=0; y1=0; x2=analyzedData[0].canvas.width; y2=analyzedData[0].canvas.height; }
             const w=x2-x1+1, h=y2-y1+1;
 
-            updateUI("CORRIGIENDO CAPAS...", 65);
+            updateUI("LIMPIANDO CAPAS...", 60);
 
-            const processed = canvases.map(c => {
+            const processedFrames = analyzedData.map(item => {
                 const out = document.createElement('canvas');
-                out.width = 48; out.height = 48;
+                out.width=48; out.height=48;
                 const ctx = out.getContext('2d');
                 ctx.clearRect(0,0,48,48);
-                const s = Math.min(48/w, 48/h);
-                const nw = w*s, nh = h*s;
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(c, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
-                return out;
+                const sc = Math.min(48/w, 48/h);
+                const nw=w*sc, nh=h*sc;
+                ctx.imageSmoothingEnabled=true;
+                ctx.imageSmoothingQuality='high';
+                ctx.drawImage(item.canvas, x1, y1, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
+                return { canvas: out, delay: item.delay };
             });
 
-            updateUI("GENERANDO GIF...", 85);
-
-            const gif = new GIF({
-                workers: 2, quality: 1, width: 48, height: 48,
-                workerScript: workerBlobUrl,
-                transparent: 'rgba(0,0,0,0)',
-                repeat: 0
+            updateUI("ENCODING (PRECISION_TIME)...", 80);
+            const gif = new GIF({ workers:2, quality:10, width:48, height:48, workerScript: workerUrl, transparent: 'rgba(0,0,0,0)', repeat: 0 });
+            
+            processedFrames.forEach(f => {
+                gif.addFrame(f.canvas, { delay: f.delay, copy: true, disposal: 2 });
             });
-
-            processed.forEach(canvas => {
-                gif.addFrame(canvas, { delay: 45, copy: true, disposal: 2 });
-            });
-
-            gif.on('finished', blob => handleResult(blob));
+            
+            gif.on('finished', b => showResult(b));
             gif.render();
-
-        } catch (e) { updateUI("ERROR PROCESO", 0); }
+        } catch(e) { updateUI("ERROR PROCESO", 0); console.error(e);}
     }
 
-    function handleResult(blob) {
-        finalBlob = blob;
-        const blobUrl = URL.createObjectURL(blob);
-        
-        // Configurar botón de descarga local
-        const dlBtn = document.getElementById('dl-btn');
-        dlBtn.onclick = () => {
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = 'sticker_48x48.gif';
-            a.click();
-        };
+    function showResult(blob) {
+        updateUI("LISTO", 100);
+        setTimeout(() => {
+            document.getElementById('monitor').style.display = "none";
+            document.getElementById('result-view').style.display = "block";
+            const url = URL.createObjectURL(blob);
+            document.getElementById('preview-img').src = url;
+            
+            document.getElementById('dlBtn').onclick = () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sticker_sync_${Date.now()}.gif`;
+                a.click();
+            };
 
-        // Mostrar vista previa local al instante
-        updateUI("SISTEMA OK", 100);
-        document.getElementById('monitor').style.display = "none";
-        document.getElementById('result').style.display = "block";
-        document.getElementById('final-img').src = blobUrl;
-
-        // Subir a ImgBB en segundo plano
-        uploadImgBB(blob);
+            uploadToImgBB(blob);
+        }, 400);
     }
 
-    async function uploadImgBB(blob) {
-        const urlInput = document.getElementById('final-url');
-        const copyBtn = document.getElementById('btnCopy');
-        urlInput.value = "Subiendo a la nube...";
-
+    async function uploadToImgBB(blob) {
         const fd = new FormData();
         fd.append('image', blob);
-
         try {
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-                method: 'POST',
-                body: fd
-            });
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: fd });
             const data = await res.json();
-
             if(data.success) {
-                urlInput.value = data.data.url;
-            } else {
-                throw new Error(data.error.message);
+                document.getElementById('final-url').value = data.data.url;
             }
-        } catch (e) {
-            urlInput.value = "Error al subir (Usa descarga directa)";
-        }
+        } catch (e) { document.getElementById('final-url').value = "Error al obtener link."; }
     }
 
-    function copyLink() {
+    function copyUrl() {
         const i = document.getElementById('final-url');
-        if(!i.value.startsWith('http')) return;
+        if(!i.value.includes('http')) return;
         i.select();
         document.execCommand('copy');
-        const btn = document.getElementById('btnCopy');
-        btn.textContent = "¡COPIADO!";
-        setTimeout(() => btn.textContent = "COPIAR LINK DIRECTO", 2000);
+        alert("Link copiado.");
     }
 </script>
 </body>
