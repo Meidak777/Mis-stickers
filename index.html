@@ -17,8 +17,6 @@
             --text: #ffffff;
         }
 
-        * { box-sizing: border-box; }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
@@ -43,7 +41,7 @@
         }
 
         .terminal::before {
-            content: "SYSTEM_CORE_ACTIVE";
+            content: "FRAME_DISPOSAL_ACTIVE";
             position: absolute;
             top: -12px; left: 20px;
             background: var(--bg);
@@ -96,7 +94,6 @@
         }
 
         .btn-run { background: var(--accent); color: #fff; }
-        .btn-run:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(88,101,242,0.4); }
 
         #status-box {
             display: none;
@@ -147,27 +144,27 @@
 
 <div class="terminal">
     <h1>STK-48 CORE</h1>
-    <p>Conversor universal de stickers 48x48 para Discord.</p>
+    <p>Conversor de stickers con eliminación de rastro.</p>
 
     <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 24px; margin-bottom: 10px;">📁</div>
-        <div style="font-weight: bold; font-size: 13px;">SUBIR IMAGEN / GIF</div>
+        <div style="font-size: 24px; margin-bottom: 10px;">📦</div>
+        <div style="font-weight: bold; font-size: 13px;">SUBIR ARCHIVO</div>
         <input type="file" id="fileInput" hidden accept="image/*">
     </div>
 
-    <input type="text" id="urlInput" class="input-box" placeholder="https://enlace-directo.com/imagen.png">
-    <button class="btn btn-run" onclick="fromUrl()">EJECUTAR PROCESO</button>
+    <input type="text" id="urlInput" class="input-box" placeholder="SOURCE_URL_INPUT...">
+    <button class="btn btn-run" onclick="fromUrl()">INICIAR CONVERSIÓN</button>
 
     <div id="status-box">
-        <div id="status-text">ESPERANDO...</div>
+        <div id="status-text">INIT...</div>
         <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
 
     <div id="result">
         <div class="preview-frame"><img id="final-img" src="" alt=""></div>
         <input type="text" id="final-url" class="input-box" readonly style="text-align: center;">
-        <button class="btn copy-btn" onclick="copyUrl()">COPIAR ENLACE</button>
-        <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">NUEVO ARCHIVO</button>
+        <button class="btn copy-btn" onclick="copyUrl()">COPIAR LINK</button>
+        <button class="btn" style="background:transparent; color:#555; margin-top:10px;" onclick="location.reload()">REINICIAR</button>
     </div>
 </div>
 
@@ -178,27 +175,22 @@
         try {
             const response = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
             const scriptText = await response.text();
-            const blob = new Blob([scriptText], { type: 'application/javascript' });
-            workerBlobUrl = URL.createObjectURL(blob);
-            console.log("Motor listo.");
-        } catch (e) {
-            console.error("Fallo al precargar motor:", e);
-        }
+            workerBlobUrl = URL.createObjectURL(new Blob([scriptText], { type: 'application/javascript' }));
+        } catch (e) { console.error("Error cargando motor."); }
     }
     preloadWorker();
 
-    const fileInput = document.getElementById('fileInput');
-    fileInput.onchange = e => start(e.target.files[0]);
+    document.getElementById('fileInput').onchange = e => start(e.target.files[0]);
 
     async function fromUrl() {
         const url = document.getElementById('urlInput').value.trim();
         if(!url) return;
-        updateUI("DESCARGANDO...", 20);
+        updateUI("BAJANDO RECURSO...", 20);
         try {
             const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
             const blob = await res.blob();
             start(blob);
-        } catch(e) { updateUI("ERROR_DESCARGA", 0); }
+        } catch(e) { updateUI("ERROR_URL", 0); }
     }
 
     function updateUI(txt, pct) {
@@ -244,14 +236,15 @@
                     ctx.clearRect(0,0,48,48);
                     ctx.drawImage(img, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
 
-                    updateUI("ENCODE_GIF_STREAM...", 85);
+                    updateUI("RE-EMPAQUETANDO...", 80);
                     const gif = new GIF({
                         workers: 2,
-                        quality: 10,
+                        quality: 1,
                         width: 48,
                         height: 48,
                         workerScript: workerBlobUrl,
-                        transparent: 'rgba(0,0,0,0)'
+                        transparent: 0x000000,
+                        background: '#000000'
                     });
                     gif.addFrame(c, { delay: 100 });
                     gif.on('finished', blob => upload(blob));
@@ -263,19 +256,23 @@
             return;
         }
 
-        // Si es GIF Animado
-        updateUI("EXTRAYENDO_FRAMES...", 40);
+        // Si es un GIF Animado
+        updateUI("DESCOMPONIENDO GIF...", 30);
 
         try {
-            const frames = await gifFrames({ url: URL.createObjectURL(file), frames: 'all', outputType: 'canvas', cumulative: true });
-            
+            const frames = await gifFrames({ 
+                url: URL.createObjectURL(file), 
+                frames: 'all', 
+                outputType: 'canvas', 
+                cumulative: true 
+            });
+
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            const tempCanvases = frames.map(f => {
+            const canvases = frames.map(f => {
                 const c = f.getImage();
-                const ctx = c.getContext('2d');
-                const d = ctx.getImageData(0,0,c.width,c.height).data;
+                const d = c.getContext('2d').getImageData(0,0,c.width,c.height).data;
                 for(let i=3; i<d.length; i+=4) {
-                    if(d[i]>15) {
+                    if(d[i]>20) {
                         const x = (i/4)%c.width; const y = Math.floor((i/4)/c.width);
                         minX = Math.min(minX,x); maxX = Math.max(maxX,x);
                         minY = Math.min(minY,y); maxY = Math.max(maxY,y);
@@ -284,43 +281,55 @@
                 return c;
             });
 
-            if(minX === Infinity) { minX=0; minY=0; maxX=tempCanvases[0].width; maxY=tempCanvases[0].height; }
+            if(minX === Infinity) { minX=0; minY=0; maxX=canvases[0].width; maxY=canvases[0].height; }
             const w = (maxX - minX)+1; const h = (maxY - minY)+1;
 
-            updateUI("NORMALIZANDO_48PX...", 70);
+            updateUI("LIMPIANDO CAPAS...", 60);
 
-            const processed = tempCanvases.map(c => {
+            const processed = canvases.map(c => {
                 const out = document.createElement('canvas');
                 out.width = 48; out.height = 48;
                 const ctx = out.getContext('2d');
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
+                
+                ctx.clearRect(0, 0, 48, 48);
+                
                 const s = Math.min(48/w, 48/h);
                 const nw = w*s, nh = h*s;
+                
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(c, minX, minY, w, h, (48-nw)/2, (48-nh)/2, nw, nh);
                 return out;
             });
 
-            updateUI("ENCODE_GIF_STREAM...", 85);
+            updateUI("RE-EMPAQUETANDO...", 80);
 
             const gif = new GIF({
                 workers: 2,
-                quality: 10,
+                quality: 1,
                 width: 48,
                 height: 48,
                 workerScript: workerBlobUrl,
-                transparent: 'rgba(0,0,0,0)'
+                transparent: 0x000000,
+                background: '#000000'
             });
 
-            processed.forEach(c => gif.addFrame(c, {delay: 45, copy: true, disposal: 2}));
+            processed.forEach(c => {
+                gif.addFrame(c, {
+                    delay: 45, 
+                    copy: true, 
+                    disposal: 2
+                });
+            });
+
             gif.on('finished', blob => upload(blob));
             gif.render();
 
-        } catch (e) { updateUI("CORE_ERROR", 0); }
+        } catch (e) { updateUI("ERROR_PROCESO", 0); }
     }
 
     async function upload(blob) {
-        updateUI("UPLOADING...", 95);
+        updateUI("SUBIENDO...", 95);
         const fd = new FormData();
         fd.append('reqtype', 'fileupload');
         fd.append('time', '72h');
@@ -330,20 +339,20 @@
             const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method: 'POST', body: fd });
             const url = await res.text();
             if(url.includes('http')) {
-                updateUI("SISTEMA_OK", 100);
+                updateUI("COMPLETO", 100);
                 document.getElementById('status-box').style.display = "none";
                 document.getElementById('result').style.display = "block";
                 document.getElementById('final-img').src = url;
                 document.getElementById('final-url').value = url;
             }
-        } catch (e) { updateUI("UPLOAD_ERROR", 0); }
+        } catch (e) { updateUI("ERROR_UPLOAD", 0); }
     }
 
     function copyUrl() {
         const i = document.getElementById('final-url');
         i.select();
         document.execCommand('copy');
-        alert("Enlace copiado.");
+        alert("Copiado.");
     }
 </script>
 </body>
