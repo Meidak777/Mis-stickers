@@ -134,7 +134,7 @@
 <script>
     // Conectado de forma segura a tu Cloudflare Worker
     const WORKER_URL = 'https://cappellatomas2.workers.dev';
-    
+
     let workerUrl = null;
 
     async function init() {
@@ -278,14 +278,23 @@
         });
     }
 
+    // NUEVA FUNCIÓN CON ALERTAS DE ERROR
     async function uploadToCloudflare(blob) {
         const fd = new FormData();
         fd.append('image', blob);
         try {
             const res = await fetch(WORKER_URL, { method: 'POST', body: fd });
             const data = await res.json();
-            return data.success ? data.url : null;
-        } catch (e) { return null; }
+            if (data.success) {
+                return data.url;
+            } else {
+                alert("Error del Worker: " + (data.error || "Desconocido"));
+                return null;
+            }
+        } catch (e) { 
+            alert("Error de conexión: Verifica que tu WORKER_URL sea correcta. Detalle: " + e.message);
+            return null; 
+        }
     }
 
     function addResultToUI(url, name) {
